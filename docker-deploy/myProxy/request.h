@@ -21,7 +21,7 @@ private:
     std::string host;
     std::string port;
 
-    std::map<std::string, std::string> request_headers;
+    std::map<std::string, std::string> header;
     std::string request_body;
     int uid;
 
@@ -45,6 +45,7 @@ public:
         } else {
             this->full_url = request_uri;
         }
+        this->header = parse_header();
     }
     Request(const Request &rhs){}
     Request &operator=(const Request &rhs){ return *this; }
@@ -57,6 +58,22 @@ public:
     std::string get_port(){ return port; }
     std::string get_host(){ return host; }
     std::string get_request_body(){ return request_body; }
+
+    std::string get_full_url(){ return full_url; }
+    std::map<std::string, std::string> get_header(){ return header; }
+
+    std::map<std::string, std::string> parse_header() {
+        string content = request.substr(request.find("\r\n") + 2, request.find("\r\n\r\n"));
+        while(content.find("\r\n")!=string::npos) {
+            if(content.substr(content.find("\r\n"))=="\r\n") {break;}
+            std::string header_line = content.substr(0, content.find("\r\n"));
+            std::string key = header_line.substr(0, header_line.find(":"));
+            std::string value = header_line.substr(header_line.find(":") + 1);
+            header[key] = value;
+            content = content.substr(content.find("\r\n") + 2);
+        }
+        return header;
+    }
 
     std::string parse_request_line(){
         return request.substr(0, request.find("\r\n"));
