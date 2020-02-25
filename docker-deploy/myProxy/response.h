@@ -38,18 +38,6 @@ public:
     Response(Response &rhs){}
     Response &operator=(Response &rhs){ return *this; }
 
-    std::map<std::string, std::string> parse_header() {
-        string content = response.substr(response.find("\r\n") + 2, response.find("\r\n\r\n"));
-        while(content.find("\r\n")!=string::npos) {
-            if(content.substr(content.find("\r\n"))=="\r\n") {break;}
-            std::string header_line = content.substr(0, content.find("\r\n"));
-            std::string key = header_line.substr(0, header_line.find(":"));
-            std::string value = header_line.substr(header_line.find(":") + 1);
-            header[key] = value;
-            content = content.substr(content.find("\r\n") + 2);
-        }
-        return header;
-    }
 
     std::string parse_status_line(){ return response.substr(0, response.find("\r\n")); }
     std::string parse_protocol_vision(){ return status_line.substr(0, status_line.find(" ")); }
@@ -62,6 +50,18 @@ public:
         std::string tmp = status_line.substr(status_line.find(" ") + 1);
         tmp = tmp.substr(tmp.find(" ") + 1);
         return tmp;
+    }
+    std::map<std::string, std::string> parse_header() {
+        string content = response.substr(response.find("\r\n") + 2, response.find("\r\n\r\n"));
+        while(content.find("\r\n")!=string::npos) {
+            if(content.substr(content.find("\r\n"))=="\r\n") { break; }
+            std::string header_line = content.substr(0, content.find("\r\n"));
+            std::string key = header_line.substr(0, header_line.find(":"));
+            std::string value = header_line.substr(header_line.find(":") + 1);
+            header[key] = value;
+            content = content.substr(content.find("\r\n") + 2);
+        }
+        return header;
     }
 
     std::map<std::string, std::string> get_header(){ return header; }

@@ -7,6 +7,8 @@
 
 #include "request.h"
 
+int buffer_size = 65535;
+
 class Proxy {
 private:
     Request* request;
@@ -14,9 +16,11 @@ private:
     int client_fd;
     int server_fd;
     void get_request_from_client();
+    char* loop_recv(int sender_fd);
     void connect_request(); // if request.method == "CONNECT"
     void connect_with_server();
     void send_ack();
+
     void data_forwarding();
     void get_request(); // if request.method == "GET"
     void post_request(); // if request.method == "POST"
@@ -47,8 +51,10 @@ void Proxy::send_ack() {
     }
 }
 
+
 void Proxy::data_forwarding() {
-    char buffer[65535];
+    std::vector<char> buffer(buffer_size);
+    char *p = buffer.data();
     fd_set readfds; // list listening on
     int fdmax = -1;
     fdmax = (server_fd > client_fd)? server_fd: client_fd;
@@ -62,10 +68,9 @@ void Proxy::data_forwarding() {
             cerr << "ERORR" << endl;
             break;
         }
-        memset(buffer, 0, 65535);
         if (FD_ISSET(server_fd, &readfds)) {
             // recv data from server
-            status = recv(server_fd, buffer, 65535, 0);
+            status = recv(server_fd, p, buffer_size, 0);
             if (status < 0) {
                 cout << "status < 0" << endl;
                 break;
@@ -75,14 +80,14 @@ void Proxy::data_forwarding() {
                 return;
             } else {
                 // forward data to client
-                status = send(client_fd, buffer, status, 0);
+                status = send(client_fd, p, status, 0);
                 if (status == -1) {
                     break;
                 }
             }
         } else if (FD_ISSET(client_fd, &readfds)) {
             // recv data from client
-            status = recv(client_fd, buffer, 65535, 0);
+            status = recv(client_fd, p, buffer_size, 0);
             if (status < 0) {
                 cout << "client status < 0" << endl;
                 break;
@@ -92,7 +97,7 @@ void Proxy::data_forwarding() {
                 return;
             } else {
                 // forward data to server
-                status = send(server_fd, buffer, status, 0);
+                status = send(server_fd, p, status, 0);
                 if (status == -1) {
                     break;
                 }
@@ -102,15 +107,36 @@ void Proxy::data_forwarding() {
 
 }
 
-void Proxy::get_request_from_client() {
-    // get request from client
-    std::vector<char> buffer(65536);
-    char* p = buffer.data();
-    int len = recv(client_fd, p, 65536, 0);
-    if (len < 0){
+
+char* Proxy::loop_recv(int sender_fd) {
+    std::vector<char> buffer(buffer_size);
+    char *p = buffer.data();
+    int len = 0;
+    len = recv(sender_fd, p, buffer_size, 0);
+    if (len < 0) {
         exit(1);
     }
-    std::string s(p);
+    string cur_string(buffer.begin(), buffer.end());
+    int total = len;
+    while (cur_string.find("\r\n\r\n") == string::npos) {
+        // if not finish
+        buffer.resize(total + buffer_size);
+        p = buffer.data() + total;
+        len = recv(sender_fd, p, buffer_size, 0);
+        if (len < 0){
+            exit(1);
+        }
+        total += len;
+        cur_string = buffer.data();
+    }
+    return buffer.data();
+    // memory leak, free buffer!
+}
+
+
+void Proxy::get_request_from_client() {
+    // get request from client
+    std::string s(loop_recv(client_fd));
     request = new Request(s, proxy_id);
     std::cout << "port ----" << request->get_port() << std::endl;
     std::cout << "host ----" << request->get_host() << std::endl;
@@ -133,6 +159,8 @@ void Proxy::connect_request() {
     close(server_fd);
     return;
 }
+
+void Proxy::get_request();
 
 void Proxy::connect_with_server() {
     struct addrinfo host_info;
