@@ -73,7 +73,7 @@ LRUCache cache(99999);
 //
 //                }
 //                // no-store -> refetching
-//                if (request_header.find("no-store")!=request_header.end()){
+//                else if (request_header.find("no-store")!=request_header.end()){
 //                    std::cout << 'in cache, but request saying no-store, refetching' << std::endl;
 //                    // refetching
 //                    response_refetched = refetching(server_fd, request);
