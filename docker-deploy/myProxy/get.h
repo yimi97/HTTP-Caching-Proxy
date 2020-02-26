@@ -1,4 +1,3 @@
-
 #include "cache.h"
 #include "request.h"
 #include "response.h"
@@ -43,6 +42,7 @@ LRUCache cache(99999);
 //                cache.update_cache(request_url, response_refetched);
 //            }
 //            // send(client_fd, response_refetched);
+//             return;
 //        }
 //        else {// if not expired
 //            // request cache-control
@@ -56,7 +56,8 @@ LRUCache cache(99999);
 //                    revalidation();
 //                    if(valid == true) {
 //                        std::cout << 'in cache, revalidation succeed, valid' << std::endl;
-//                        // send(client_fd, responsed_cached);
+//                        // send(client_fd, response_cached);
+//                            return;
 //                    }
 //                    else {
 //                        std::cout << 'in cache, revalidation failed, refetching' << std::endl;
@@ -67,6 +68,7 @@ LRUCache cache(99999);
 //                            cache.update_cache(request_url, response_refetched);
 //                        }
 //                        // send(client_fd, response_refetched);
+//                           return;
 //                    }
 //
 //                }
@@ -81,11 +83,8 @@ LRUCache cache(99999);
 //                    }
 //
 //                    // send(client_fd, response_refetched);
+//                        return;
 //                }
-//                // else {
-//                //     std::cout << 'in cache, valid' << std::endl;
-//                //     // send(client_fd, responsed_cached);
-//                // }
 //            }
 //
 //            // response cache-control
@@ -99,7 +98,8 @@ LRUCache cache(99999);
 //                    revalidation();
 //                    if (valid == true) {
 //                        std::cout << 'in cache, revalidation succeed, valid' << std::endl;
-//                        // send(client_fd, responsed_cached);
+//                        // send(client_fd, response_cached);
+//                            return;
 //                    }
 //                    else {
 //                        std::cout << 'in cache, revalidation failed, refetching' << std::endl;
@@ -109,17 +109,14 @@ LRUCache cache(99999);
 //                        if (can_update(response_refetched) == true) {
 //                            cache.update_cache(request_url, response_refetched);
 //                        }
+//                         // send(client_fd, response_refetched);
+//                           return;
 //                    }
 //                }
-//                // else {
-//                //     std::cout << 'in cache, valid' << std::endl;
-//                //     // send response_cached back to client;
-//                //     // send(client_fd, responsed_cached);
-//                // }
 //            }
 //
-//
-//            // send(client_fd, responstd::cout << 'in cache, valid' << std::endl;sed_cached);
+//            std::cout << 'in cache, valid' << std::endl;
+//            // send(client_fd, response_cached);
 //        }
 //    }
 //    else {
@@ -130,7 +127,7 @@ LRUCache cache(99999);
 //        if (can_update(response_refetched) == true) {
 //            cache.insert_cache(request_url, response_refetched);
 //        }
-//        // send(client_fd, responsed_cached);
+//        // send(client_fd, response_cached);
 //    }
 //
 //}
