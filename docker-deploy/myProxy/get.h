@@ -61,7 +61,7 @@ void GET(Request request, int remote_fd, int client_fd){
                 if (request_cache_control.find("no-cache") != string::npos) {
                     // revalidate
                     std::cout << 'in cache, but need to revalidate' << std::endl;
-                    valid = revalidation(request, response_cached);
+                    valid = revalidation(server_fd, response_cached, request);
                     if(valid == true) {
                         std::cout << 'in cache, revalidation succeed, valid' << std::endl;
                         // send(client_fd, response_cached);
@@ -101,7 +101,7 @@ void GET(Request request, int remote_fd, int client_fd){
                     response_cached_cache_control.find("must-revalidate") != string::npos ||
                     response_cached_cache_control.find("proxy-revalidate") != string::npos ) {
                     std::cout << 'in cache, but need to revalidate' << std::endl;
-                    valid = revalidation(request, response_cached);
+                    valid = revalidation(server_fd, response_cached, request);
                     if (valid == true) {
                         std::cout << 'in cache, revalidation succeed, valid' << std::endl;
                         // send(client_fd, response_cached);
@@ -229,26 +229,6 @@ bool can_update(Response response) {
         }
     }
     return true;
-
-//    if(exp != header.end()){
-//        return true;
-//    }
-//
-//    if (cc != header.end()) {
-//        cache_control = cc->second;
-//        if (exp == header.end() && cache_control.find("max-age")==string::npos){
-//            return false;
-//        }
-//        if (cache_control.find("no-store") != string::npos ||
-//            cache_control.find("private") != string::npos ||
-//            cache_control.find("Authorization") != string::npos){
-//            return false;
-//        }
-//    }
-//    if (cc == header.end() && exp == header.end()){
-//        return false;
-//    }
-//    return true;
 }
 
 
