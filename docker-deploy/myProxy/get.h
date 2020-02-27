@@ -394,18 +394,19 @@ vector<char> Proxy::continue_recv(int sender_fd, vector<char> &header){
     vector<char> body;
     auto pos_chk = strstr(header.date(), "chunked");
     auto pos_clen = strstr(header.date(), "Content-Length:");
-    if(pos_chk != NULL) {
-        header.pop_back();
-        return handle_chunk(sender_fd);
-    }
-    else if(pos_clen != NULL) {
+//    if(pos_chk != NULL) {
+//        header.pop_back();
+//        return handle_chunk(sender_fd);
+//    }
+//    else
+    if(pos_clen != nullptr) {
         string content(header.begin(), header.end());
         content = content.substr(content.find("Content-Length: "));
         content = content.substr(16, content.find("\r\n"));
         int length = (int)atoi(content.c_str());
         vector<char> newbuffer(length+1, 0);
         if (length != 0){
-            recv(fd, newbuffer.data(), length, MSG_WAITALL);
+            recv(sender_fd, newbuffer.data(), length, MSG_WAITALL);
             header.pop_back();
         }
         return newbuffer;

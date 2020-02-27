@@ -20,20 +20,27 @@ private:
                             // Common status codes are 200, 404, or 302
     std::string status_text; // A brief, purely informational, textual description of the status code
                             // to help a human understand the HTTP message
-
+    bool chunked;
+    bool has_content_length;
     std::map<std::string, std::string> header;
-    std::string response_body;
+    vector<vector<char>> *resp_buffer;
 
 public:
     Response(){}
-    Response(char* s): response(s), status_text(""), status_code(""),
-    protocol_vision(""), status_line(""), response_body(""){
+    Response(const char* s, vector<vector<char>>* b): response(s), status_text(""), status_code(""),
+    protocol_vision(""), status_line(""), resp_buffer(b), chunked(false),
+    has_content_length(false){
+        if (response.find("chunked") != string::npos) {
+            chunked = true;
+        }
+        if (response.find("Content-Length: ") != string::npos) {
+            has_content_length = true;
+        }
         status_line = parse_status_line();
         protocol_vision = parse_protocol_vision();
         status_code = parse_status_code();
         status_text = parse_status_text();
         parse_header();
-
     }
     Response(Response &rhs){}
     Response &operator=(Response &rhs){ return *this; }
@@ -73,7 +80,12 @@ public:
     std::string get_status_line(){ return status_line; }
     std::string get_protocol_vision(){ return protocol_vision; }
     std::string get_status_code(){ return status_code; }
-    std::string get_status_text(){ return status_text; }
-    std::string get_response_body(){ return response_body; }
+    vector<vector<char>>* get_buffer(){ return resp_buffer; }
+    bool if_chunked() {
+        return chunked;
+    }
+    bool if_content_length(){
+        return has_content_length;
+    }
 };
 #endif //PROXY_RESPONSE_H
