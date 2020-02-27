@@ -6,18 +6,19 @@
 size_t my_recv(int fd, vector<vector<char>> &mybuffer){
     std::vector<char> first_buf(65535);
     char *p = first_buf.data();
-    size_t len;
+    size_t len = 0;
     memset(first_buf, 0, 65535);
     if((len = recv(fd, p, 65535, 0))<=0){
         return len;
     }
     mybuffer.push_back(first_buf);
-
+    // mybuffer is the buffer taking the whole response
     string first_str(first_buf.begin(), first_buf.end());
     header_str = first_str.substr(0, first_str.find("\r\n\r\n") + 4);
     auto pos_chk = header_str.find("chunked");
     auto pos_clen = header_str.find("Content-Length: ");
-    if(pos_chk != NULL) {
+    if(pos_chk != nullptr) {
+        // chunked
         while(true) {
             size_t once_len;
             if((once_len = continue_recv(fd)) <= 0) {
@@ -25,7 +26,7 @@ size_t my_recv(int fd, vector<vector<char>> &mybuffer){
             }
             len += once_len;
             vector<char> last_buf = mybuffer[mybuffer.size()-1];
-            if (strstr(last_buf.data(), "0\r\n\r\n") != NULL) {
+            if (strstr(last_buf.data(), "0\r\n\r\n") != string::nops) {
                 break;
             }
         }
@@ -47,8 +48,8 @@ size_t my_recv(int fd, vector<vector<char>> &mybuffer){
     return 0;
 }
 
-size_t continue_recv(int fd) {
-    std::vector<char> continue_buf(65535);
+size_t continue_recv(int fd, vector<vector<char>> &mybuffer) {
+    vector<char> continue_buf(65535);
     char *p = continue_buf.data();
     memset(continue_buf, 0, 65535);
     size_t once_len;
@@ -56,6 +57,7 @@ size_t continue_recv(int fd) {
         return once_len;
     }
     mybuffer.push_back(continue_buf);
+    free(&continue_buf);
     return once_len;
 }
 

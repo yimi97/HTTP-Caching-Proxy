@@ -3,6 +3,8 @@
 //
 #include <string>
 #include <map>
+
+
 #ifndef PROXY_REQUEST_H
 #define PROXY_REQUEST_H
 
@@ -20,18 +22,29 @@ private:
 
     std::string host;
     std::string port;
-
+    std::string host_ip;
+    string recv_time;
+    size_t content_length;
+    size_t header_length;
     std::map<std::string, std::string> header;
-    std::string request_body;
+    vector<vector<char>> *req_buffer;
     int uid;
 
 public:
     Request(){}
     ~Request() {
-        free(&header);
     }
-    Request(std::string s, int id): request(s), method(""), request_line(""), request_uri(""),
-    http_version(""), host(""), port(""), request_body(""), uid(id){
+    Request(std::string s, int id, vector<vector<char>> *b):
+    request(s), method(""),
+    request_line(""),
+    request_uri(""),
+    http_version(""),
+    host(""), port(""),
+    uid(id), content_length(0),
+    header_length(0), req_buffer(b),
+    host_ip(""), recv_time(""){
+        time_t now = time(0);
+        recv_time = asctime(gmtime(&now));
         this->request_line = parse_request_line();
         this->method = parse_method();
         this->request_uri = parse_request_uri();
@@ -47,7 +60,17 @@ public:
         } else {
             this->full_url = request_uri;
         }
+        size_t pos = request.find("Content-Length: ");
+        if (pos != string::npos) {
+            string content = request.substr(request.find("Content-Length: ") + 16);
+            content = content.substr(0, content.find("\r\n"));
+            content_length = (size_t)atoi(content.c_str());
+        } else {
+            content_length = 0;
+        }
+        header_length = request.length();
     }
+
     Request(const Request &rhs){}
     Request &operator=(const Request &rhs){ return *this; }
 
@@ -55,11 +78,10 @@ public:
     std::string get_request_line(){ return request_line; }
     std::string get_method(){ return method; }
     std::string get_full_url(){ return full_url; }
-    std::string get_request_uri(){ return request_uri; }
-    std::string get_http_versions(){ return http_version; }
+    size_t get_content_len(){ return content_length; }
+    size_t get_header_len(){ return header_length; }
     std::string get_port(){ return port; }
     std::string get_host(){ return host; }
-    std::string get_request_body(){ return request_body; }
     std::map<std::string, std::string>* get_header(){ return &header; }
 
     std::string parse_request_line(){
