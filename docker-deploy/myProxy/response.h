@@ -23,12 +23,11 @@ private:
     bool chunked;
     bool has_content_length;
     std::map<std::string, std::string> header;
-    vector<vector<char>> *resp_buffer;
 
 public:
     Response(){}
-    Response(const char* s, vector<vector<char>>* b): response(s), status_text(""), status_code(""),
-    protocol_vision(""), status_line(""), resp_buffer(b), chunked(false),
+    Response(string s): response(s), status_text(""), status_code(""),
+    protocol_vision(""), status_line(""), chunked(false),
     has_content_length(false){
         if (response.find("chunked") != string::npos) {
             chunked = true;
@@ -80,7 +79,6 @@ public:
     std::string get_status_line(){ return status_line; }
     std::string get_protocol_vision(){ return protocol_vision; }
     std::string get_status_code(){ return status_code; }
-    vector<vector<char>>* get_buffer(){ return resp_buffer; }
     bool if_chunked() {
         return chunked;
     }
