@@ -60,7 +60,7 @@ public:
     std::string get_port(){ return port; }
     std::string get_host(){ return host; }
     std::string get_request_body(){ return request_body; }
-    std::map<std::string, std::string> get_header(){ return header; }
+    std::map<std::string, std::string>* get_header(){ return &header; }
 
     std::string parse_request_line(){
         return request.substr(0, request.find("\r\n"));
