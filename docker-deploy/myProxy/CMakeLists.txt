@@ -3,4 +3,4 @@ project(Proxy)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(Proxy main.cpp request.h connect.h get.h post.h cache.h proxy.h response.h)
+add_executable(Proxy main.cpp request.h connect.h post.h cache.h proxy.h response.h)
