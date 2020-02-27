@@ -75,3 +75,31 @@ size_t my_send(int fd) {
     }
     return len;
 }
+
+
+
+/*
+ *mybuffer.clear();
+ *convert response to vector<vector>
+ */
+// mybuffer.clear();
+void resp_to_buf(vector<vector<char>> &mybuffer, Response response){
+    string resp = response.get_response();
+    string remain = resp;
+    size_t temp_size = 0;
+    size_t full_size = 65535;
+    size_t remain_size = resp_size;
+    vector<char> temp;
+    size_t resp_size = resp.size();
+    while(remain_size > 0) {
+        if(remain_size < full_size) {
+            temp = resp(resp.begin()+temp_size, resp.end());
+        }
+        temp = resp(remain.begin() + temp_size, remain.begin() + temp_size + full_size);  
+        mybuffer.push_back(temp);
+        temp_size = temp_size + full_size;
+        remain_size = remain_size - full_size;    
+    }
+}
+
+
