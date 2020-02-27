@@ -32,7 +32,7 @@ public:
         protocol_vision = parse_protocol_vision();
         status_code = parse_status_code();
         status_text = parse_status_text();
-        header = parse_header();
+        parse_header();
 
     }
     Response(Response &rhs){}
@@ -51,7 +51,11 @@ public:
         tmp = tmp.substr(tmp.find(" ") + 1);
         return tmp;
     }
-    std::map<std::string, std::string> parse_header() {
+
+    /*
+     * Mi Yi modified.
+     */
+    void parse_header() {
         string content = response.substr(response.find("\r\n") + 2, response.find("\r\n\r\n"));
         while(content.find("\r\n")!=string::npos) {
             if(content.substr(content.find("\r\n"))=="\r\n") { break; }
@@ -59,12 +63,13 @@ public:
             std::string key = header_line.substr(0, header_line.find(":"));
             std::string value = header_line.substr(header_line.find(":") + 1);
             header[key] = value;
+            cout << "key: " << key << " ===== value: " << value << endl;
             content = content.substr(content.find("\r\n") + 2);
         }
-        return header;
     }
 
     std::map<std::string, std::string> get_header(){ return header; }
+    std::string get_response(){ return response; }
     std::string get_status_line(){ return status_line; }
     std::string get_protocol_vision(){ return protocol_vision; }
     std::string get_status_code(){ return status_code; }
