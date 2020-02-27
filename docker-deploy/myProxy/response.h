@@ -63,12 +63,12 @@ public:
             std::string key = header_line.substr(0, header_line.find(":"));
             std::string value = header_line.substr(header_line.find(":") + 1);
             header[key] = value;
-            cout << "key: " << key << " ===== value: " << value << endl;
+//            cout << "key: " << key << " ===== value: " << value << endl;
             content = content.substr(content.find("\r\n") + 2);
         }
     }
 
-    std::map<std::string, std::string> get_header(){ return header; }
+    std::map<std::string, std::string>* get_header(){ return &header; }
     std::string get_response(){ return response; }
     std::string get_status_line(){ return status_line; }
     std::string get_protocol_vision(){ return protocol_vision; }
