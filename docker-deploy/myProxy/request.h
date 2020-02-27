@@ -27,21 +27,20 @@ private:
     size_t content_length;
     size_t header_length;
     std::map<std::string, std::string> header;
-    vector<vector<char>> *req_buffer;
     int uid;
 
 public:
     Request(){}
     ~Request() {
     }
-    Request(std::string s, int id, vector<vector<char>> *b):
+    Request(std::string s, int id):
     request(s), method(""),
     request_line(""),
     request_uri(""),
     http_version(""),
     host(""), port(""),
     uid(id), content_length(0),
-    header_length(0), req_buffer(b),
+    header_length(0),
     host_ip(""), recv_time(""){
         time_t now = time(0);
         recv_time = asctime(gmtime(&now));
@@ -121,7 +120,7 @@ public:
             my_port = my_port.substr(my_port.find(":") + 1);
             return my_port;
         }
-        return "";
+        return "80";
     }
 
     /*

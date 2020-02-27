@@ -27,8 +27,7 @@ private:
     Response* response_back; // cached
     Response* response_refetched;
     std::map<std::string, std::string> *resp_header;
-    vector<vector<char>> resp_buffer;
-    vector<vector<char>> req_buffer;
+    vector<vector<char>> my_buffer;
     void get_request_from_client();
     void my_recv_request(int sender_fd, vector<vector<char>>& buf);
     void connect_request(); // if request.method == "CONNECT"
@@ -43,8 +42,8 @@ private:
     time_t get_expiration_time();
     bool revalidation();
     bool can_update();
-    size_t my_recv(int fd);
-    size_t my_send(int fd, vector<vector<char>>& buf);
+    size_t my_recv(int fd, vector<vector<char>> &mybuffer);
+    size_t my_send(int fd, vector<vector<char>> &buf);
     size_t continue_recv(int fd);
     void post_request(); // if request.method == "POST"
 public:
@@ -60,8 +59,6 @@ public:
     req_header(nullptr),
     resp_header(nullptr){}
     ~Proxy() {
-//        free(request);
-//        free(response_back);
     }
 
     void proxy_run() {
@@ -78,6 +75,11 @@ public:
             post_request();
             std::cout << "================ " << proxy_id << ": POST-END================" << std::endl;
         }
+        free(req_header);
+        free(resp_header);
+        free(request);
+        free(response_refetched);
+        free(response_back);
         close(client_fd);
         close(server_fd);
         return;
@@ -117,7 +119,6 @@ void Proxy::data_forwarding() {
                 break;
             } else if (status == 0) {
                 cerr << proxy_id << ": Server has closed Tunnel." << endl;
-                close(server_fd);
                 return;
             } else {
                 // forward data to client
@@ -134,7 +135,6 @@ void Proxy::data_forwarding() {
                 break;
             } else if (status == 0) {
                 cerr << proxy_id << ": Client has closed Tunnel." << endl;
-                close(server_fd);
                 return;
             } else {
                 // forward data to server
@@ -147,51 +147,66 @@ void Proxy::data_forwarding() {
     } // while
 }
 
-void Proxy::my_recv_request(int sender_fd, vector<vector<char>> &buffer) {
-    vector<char> buf(buffer_size);
-    char *p = buf.data();
-    int len = 0;
-    len = recv(sender_fd, p, buffer_size, 0);
-    if (len < 0) {
-        cerr << proxy_id << ": Receive Request Failure" << endl;
-        return;
-    } else if (len == 0) {
-        cerr << proxy_id << ": Client sent 0" << endl;
-        return;
-    }
-    buffer.push_back(buf);
-    string cur_string(buf.begin(), buf.end());
-    int total = len;
-    string header = cur_string.substr(0, cur_string.find("\r\n\r\n") + 4);
-    request = new Request(header, proxy_id, &buffer);
-    while(true){
-        if (total == request->get_content_len() + request->get_header_len()) {
-            break;
-        }
-        size_t size = request->get_content_len() + request->get_header_len() - total;
-        vector<char> once_buf(size);
-        char *once_p = once_buf.data();
-        len = recv(client_fd, once_p, size, 0);
-        if (len <= 0) {
-            break;
-        }
-        buffer.push_back(once_buf);
-        total += len;
-    }
-//    cout << proxy_id << ": Received " << total << " bytes from client" << endl;
-}
+//void Proxy::my_recv_request(int sender_fd, vector<vector<char>> &buffer) {
+//    vector<char> buf(buffer_size);
+//    char *p = buf.data();
+//    int len = 0;
+//    len = recv(sender_fd, p, buffer_size, 0);
+//    if (len < 0) {
+//        cerr << proxy_id << ": Receive Request Failure" << endl;
+//        return;
+//    } else if (len == 0) {
+//        cerr << proxy_id << ": Client sent 0" << endl;
+//        return;
+//    }
+//    buffer.push_back(buf);
+//    string cur_string(buf.begin(), buf.end());
+//    int total = len;
+//    string header = cur_string.substr(0, cur_string.find("\r\n\r\n") + 4);
+//    request = new Request(header, proxy_id, &buffer);
+//    while(true){
+//        if (total == request->get_content_len() + request->get_header_len()) {
+//            break;
+//        }
+//        size_t size = request->get_content_len() + request->get_header_len() - total;
+//        vector<char> once_buf(size);
+//        char *once_p = once_buf.data();
+//        len = recv(client_fd, once_p, size, 0);
+//        if (len <= 0) {
+//            break;
+//        }
+//        buffer.push_back(once_buf);
+//        total += len;
+//    }
+////    cout << proxy_id << ": Received " << total << " bytes from client" << endl;
+//}
 
 void Proxy::get_request_from_client() {
     // get request from client
-    my_recv_request(client_fd, req_buffer);
+    my_buffer.clear();
+    int len = my_recv(client_fd, my_buffer);
+    if (len <= 0) {
+        cerr << "my_recv Failure" << endl;
+        return;
+    }
+    string str = "";
+    int i = 0;
+    while(i < my_buffer.size()){
+        str += my_buffer[i].data();
+        i++;
+    }
+    request = new Request(str, proxy_id);
     req_header = request->get_header();
     cout << endl << "================= " << proxy_id << ": " << request->get_method() << " Request Received =================" << endl;
     cout << proxy_id << ": " << request->get_request_line() << endl;
+    cout << proxy_id << ": " << request->get_port() << endl;
+    cout << proxy_id << ": " << request->get_host() << endl;
 }
 
 void Proxy::connect_request() {
     // connect with server
-    if (connect_with_server() == false) {
+    if (!connect_with_server()) {
+        cerr << "Connect Failure" << endl;
         return;
     }
     // send 200 OK back to client
@@ -201,10 +216,8 @@ void Proxy::connect_request() {
         data_forwarding();
     } catch (std::exception &e) {
         cerr << proxy_id << ": Data Forwarding Failure." << endl;
-        close(server_fd);
         return;
     }
-    close(server_fd);
     return;
 }
 
@@ -216,17 +229,12 @@ bool Proxy::connect_with_server() {
     host_info.ai_family   = AF_UNSPEC;
     host_info.ai_socktype = SOCK_STREAM;
 //    const char* hostname = request->get_host().c_str();
-    const char* port = "";
-    if (request->get_port() == "") {
-        port = "80";
-    } else {
-        port = request->get_port().c_str();
-    }
+
 
     status = getaddrinfo(request->get_host().c_str(),
-            port,
-            &host_info,
-            &host_info_list);
+                         request->get_port().c_str(),
+                         &host_info,
+                         &host_info_list);
     if (status != 0) {
         cerr << proxy_id << ": Error: cannot get address info for host" << endl;
         return false;
@@ -253,6 +261,7 @@ bool Proxy::connect_with_server() {
 void Proxy::get_request(){
     string url = request->get_full_url();
     Response *cached_resp = cache.get(url);
+    response_back = cached_resp;
     /*
          * Mi Yi please take care of this part
          *
@@ -279,7 +288,7 @@ void Proxy::get_request(){
             if (can_update()) {
                 cache.put(request->get_full_url(), response_refetched);
             }
-            if(my_send(client_fd, *response_refetched->get_buffer()) < 0){
+            if(my_send(client_fd, my_buffer) < 0){
                 cerr << "Error: reply to client" << endl;
             }
             cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
@@ -299,7 +308,7 @@ void Proxy::get_request(){
                     if (valid) {
                         std::cout << "in cache, revalidation succeed, valid" << std::endl;
                         // =======================================
-                        if(my_send(client_fd, *cached_resp->get_buffer()) < 0){
+                        if(my_send(client_fd, my_buffer) < 0){
                             cerr << "Error: reply to client" << endl;
                         }
                         cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
@@ -314,7 +323,7 @@ void Proxy::get_request(){
                         if (can_update()) {
                             cache.put(request->get_full_url(), response_refetched);
                         }
-                        if(my_send(client_fd, *response_refetched->get_buffer()) < 0){
+                        if(my_send(client_fd, my_buffer) < 0){
                             cerr << "Error: reply to client" << endl;
                         }
                         cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
@@ -331,7 +340,7 @@ void Proxy::get_request(){
                     if (can_update()) {
                         cache.put(request->get_full_url(), response_refetched);
                     }
-                    if(my_send(client_fd, *response_refetched->get_buffer()) < 0){
+                    if(my_send(client_fd, my_buffer) < 0){
                         cerr << "Error: reply to client" << endl;
                     }
                     cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
@@ -351,7 +360,7 @@ void Proxy::get_request(){
                     if (valid) {
                         std::cout << "in cache, revalidation succeed, valid" << std::endl;
                         // =============================================
-                        if(my_send(client_fd, *cached_resp->get_buffer()) < 0){
+                        if(my_send(client_fd, my_buffer) < 0){
                             cerr << "Error: reply to client" << endl;
                         }
                         cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
@@ -366,7 +375,7 @@ void Proxy::get_request(){
                         if (can_update()) {
                             cache.put(request->get_full_url(), response_refetched);
                         }
-                        if(my_send(client_fd, *response_refetched->get_buffer()) < 0){
+                        if(my_send(client_fd, my_buffer) < 0){
                             cerr << "Error: reply to client" << endl;
                         }
                         cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
@@ -387,10 +396,10 @@ void Proxy::get_request(){
         // Update or Insert Cache -> update_cache()
         // Need more details like check no store, must revalidation...
         if (can_update()) {
-            cache.put(request->get_full_url(), response_back);
+            cache.put(request->get_full_url(), response_refetched);
         }
         // Reply to Client
-        if(my_send(client_fd, *response_refetched->get_buffer()) < 0){
+        if(my_send(client_fd, my_buffer) < 0){
             cerr << "Error: reply to client" << endl;
         }
         cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
@@ -405,7 +414,6 @@ bool Proxy::reply_to_client(Response* res){
         return false;
     }
     cout << "=========" << proxy_id << ": successfully answer the client ==========" << endl;
-    close(client_fd);
     return true;
 }
 
@@ -417,11 +425,11 @@ void Proxy::re_fetching(){
     if (status == -1) {
         // log
         cerr << proxy_id << ": Error: cannot send request to server" << endl;
-        close(server_fd);
         return;
     }
     cout << "=========== " << proxy_id << ": Sent Request Successfully in re_fetching =========" << endl;
-    size_t len = my_recv(server_fd);
+    my_buffer.clear();
+    size_t len = my_recv(server_fd, my_buffer);
     if (len < 0) {
         cerr << "loop recv failure" << endl;
         return;
@@ -429,16 +437,22 @@ void Proxy::re_fetching(){
         cerr << "close tunnel" << endl;
         return;
     }
-    cout << "=========== " << proxy_id << ": Received " << resp_buffer.size() << " From Server =========" << endl;
+//    cout << proxy_id << ": Received Successfully in re_fetching" << endl;
+    string str = "";
+    int i = 0;
+    while(i < my_buffer.size()){
+        str += my_buffer[i].data();
+        i++;
+    }
+    response_refetched = new Response(str);
 }
 
 void Proxy::post_request() {
     re_fetching();
-    if(my_send(client_fd, *response_refetched->get_buffer()) < 0){
+    if(my_send(client_fd, my_buffer) < 0){
         cerr << "Error: reply to client" << endl;
     }
     cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
-    close(client_fd);
 }
 
 bool Proxy::revalidation(){
@@ -564,36 +578,40 @@ time_t Proxy::get_expiration_time(){
     return 0;
 }
 
-size_t Proxy::my_recv(int fd){
+size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
     vector<char> first_buf(65535);
     char *p = first_buf.data();
     size_t len = 0;
     if((len = recv(fd, p, 65535, 0))<=0){
+        cerr << proxy_id << ": first recv " << len << " failure" << endl;
         return len;
     }
-    resp_buffer.push_back(first_buf);
+    mybuffer.push_back(first_buf);
     // mybuffer is the buffer taking the whole response
 
     string first_str(first_buf.begin(), first_buf.end());
     // get header
     string header_str = first_str.substr(0, first_str.find("\r\n\r\n") + 4);
-    response_refetched = new Response(header_str.c_str(), &resp_buffer);
-    if(response_refetched->if_chunked()) {
+    auto pos_chk = header_str.find("chunked");
+    auto pos_clen = header_str.find("Content-Length: ");
+    if(pos_chk != string::npos) {
         // chunked
+        cout << "chunked" << endl;
         while(true) {
             size_t once_len;
             if((once_len = continue_recv(fd)) <= 0) {
                 return len;
             }
             len += once_len;
-            vector<char> last_buf = resp_buffer[resp_buffer.size()-1];
+            vector<char> last_buf = mybuffer[mybuffer.size()-1];
             if (strstr(last_buf.data(), "0\r\n\r\n") != nullptr) {
                 break;
             }
         }
         return len;
     }
-    else if(response_refetched->if_content_length()) {
+    else if(pos_clen != string::npos) {
+        cout << "Content-Length:" << endl;
         string content = header_str.substr(header_str.find("Content-Length: "));
         content = content.substr(16, content.find("\r\n"));
         size_t total = (size_t)atoi(content.c_str());
@@ -601,13 +619,14 @@ size_t Proxy::my_recv(int fd){
         while (len < total + header_str.size()){
             size_t once_len = 0;
             if((once_len = continue_recv(fd)) <= 0){
+                cerr << "continue recv failure" << endl;
                 return len;
             }
             len += once_len;
         }
         return len;
     }
-    return 0;
+    return len;
 }
 
 size_t Proxy::continue_recv(int fd) {
@@ -617,7 +636,7 @@ size_t Proxy::continue_recv(int fd) {
     if((once_len = recv(fd, p, 65535, 0)) <=0 ){
         return once_len;
     }
-    resp_buffer.push_back(continue_buf);
+    my_buffer.push_back(continue_buf);
     return once_len;
 }
 
