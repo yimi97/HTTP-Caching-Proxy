@@ -1,3 +1,15 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctime>
+#include <iostream>
+#include <locale>
+#include <iomanip>
+#include <sstream>
+#include <time.h>
+#include <typeinfo>
+#include <string.h>
+using namespace std;
+
 LRUCache cache(99999);
 
 void GET(Request request, int remote_fd, int client_fd){
@@ -14,27 +26,31 @@ void GET(Request request, int remote_fd, int client_fd){
 
     bool response_in_cache = cache.search_cache(request_url);
     bool expired;
+    bool revalidation(Response response, Request request);
     bool valid;
     int status;
     time_t expired_time;
+    time_t now = time(0);
     bool can_update(Response response);
-    bool check_expired();
+    bool check_expired(std::map<std::string, std::string> header);
     
     // in cache
     if(response_in_cache == true){
         response_cached = cache.get_cache(request_url);
         response_cached_header = response_cached.get_header();
-        expired_time = get_expiration_time();
+
+        expired_time = get_expiration_time(response_cached_header);
         // expired
-        if (expired == true) {
-            std::cout << 'in cache, but expired at ' << expired_time << std::endl;
+        if (difftime(now, expired_time)>0) {
+            std::cout << 'In cache, but expired at ' << asctime(gmtime(&expired_time)) << std::endl;
             // refetching
-            response_refetched = refetching(remote_fd, request);
+                response_refetched = refetching(remote_fd, request);
             // update cache
-            if (can_update(response_refetched) == true) {
-                cache.update_cache(request_url, response_refetched);
-            }
-            // send(client_fd, response_refetched);
+                if (can_update(response_refetched) == true) {
+                    cache.update_cache(request_url, response_refetched);
+                }
+                send(client_fd, response_refetched);
+                return;
         }
         else {// if not expired
             // request cache-control
@@ -42,13 +58,14 @@ void GET(Request request, int remote_fd, int client_fd){
             if (req_it != request_header.end()) {
                 request_cache_control = req_it->second;
                 // no-cahce -> revalidate
-                if(request_cache_control.find("no-cache") != string::npos) {
+                if (request_cache_control.find("no-cache") != string::npos) {
                     // revalidate
                     std::cout << 'in cache, but need to revalidate' << std::endl;
-                    revalidation();
+                    valid = revalidation(request, response_cached);
                     if(valid == true) {
                         std::cout << 'in cache, revalidation succeed, valid' << std::endl;
-                        // send(client_fd, responsed_cached);
+                        // send(client_fd, response_cached);
+                        return;
                     }
                     else {
                         std::cout << 'in cache, revalidation failed, refetching' << std::endl;
@@ -59,11 +76,12 @@ void GET(Request request, int remote_fd, int client_fd){
                             cache.update_cache(request_url, response_refetched);
                         }
                         // send(client_fd, response_refetched);
+                        return;
                     }
 
                 }
                 // no-store -> refetching
-                if (request_header.find（"no-store")!=request_header.end()){
+                if (request_header.find("no-store")!=request_header.end()){
                     std::cout << 'in cache, but request saying no-store, refetching' << std::endl;
                     // refetching
                     response_refetched = refetching(remote_fd, request);
@@ -71,15 +89,10 @@ void GET(Request request, int remote_fd, int client_fd){
                     if (can_update(response_refetched) == true) {
                         cache.update_cache(request_url, response_refetched);
                     }
-
                     // send(client_fd, response_refetched);
+                    return;
                 }
-                // else {
-                //     std::cout << 'in cache, valid' << std::endl;
-                //     // send(client_fd, responsed_cached);
-                // }
             }
-
             // response cache-control
             auto resp_it = response_cached_header.find("Cache-Control");
             if (resp_it != response_cached_header.end()) {
@@ -88,10 +101,11 @@ void GET(Request request, int remote_fd, int client_fd){
                     response_cached_cache_control.find("must-revalidate") != string::npos ||
                     response_cached_cache_control.find("proxy-revalidate") != string::npos ) {
                     std::cout << 'in cache, but need to revalidate' << std::endl;
-                    revalidation();  
+                    valid = revalidation(request, response_cached);
                     if (valid == true) {
                         std::cout << 'in cache, revalidation succeed, valid' << std::endl;
-                        // send(client_fd, responsed_cached);
+                        // send(client_fd, response_cached);
+                        return;
                     }
                     else {
                         std::cout << 'in cache, revalidation failed, refetching' << std::endl;
@@ -101,17 +115,13 @@ void GET(Request request, int remote_fd, int client_fd){
                         if (can_update(response_refetched) == true) {
                             cache.update_cache(request_url, response_refetched);
                         }
+                        // send(client_fd, response_refetched);
+                        return;
                     }
                 }
-                // else {
-                //     std::cout << 'in cache, valid' << std::endl;
-                //     // send response_cached back to client;
-                //     // send(client_fd, responsed_cached);                        
-                // }
             }
-
-            
-            // send(client_fd, responstd::cout << 'in cache, valid' << std::endl;sed_cached);  
+            std::cout << 'in cache, valid' << std::endl;
+            // send(client_fd, response_cached);
         }
     }
     else {
@@ -122,9 +132,8 @@ void GET(Request request, int remote_fd, int client_fd){
         if (can_update(response_refetched) == true) {
             cache.insert_cache(request_url, response_refetched);
         }
-        // send(client_fd, responsed_cached); 
+        // send(client_fd, response_cached);
     }
-
 }
 
 Response refetching(int socket_fd, Request &req){
@@ -146,24 +155,216 @@ Response refetching(int socket_fd, Request &req){
     return Response;
 }
 
-time_t get_expiration_time(Response &response){}
+time_t get_time(string date_or_exp) {
+    int n = date_or_exp.length();
+    char char_array[n + 1];
+    strcpy(char_array, date_or_exp.c_str());
+    const char *time_details = char_array;
+    struct tm tm;
+    strptime(time_details, "%a, %d %b %Y %H:%M:%S %Z", &tm);
+    time_t t = mktime(&tm);
+    return t;
+}
 
-void revalidation(){}
+time_t get_expiration_time(std::map<std::string, std::string> header){
+    auto cc = header.find("Cache-Control");
+    auto exp = header.find("Expires");
+    time_t now = time(0);
+    // check expire
+    if(exp != header.end()){
+        time_t expire_time = get_time((exp->second).substr(1));
+        return expire_time;
+    }
+    // check max-age
+    else if(cc != header.end()){
+        auto date = header.find("Date");
+        auto age = header.find("Age");
+        std::string cache_control = cc->second;
+        std::string max_age = cache_control.substr(cache_control.find("max-age=") + 8, cache_control.find("max-age=") + 16);
+        if (max_age.find(",")!=string::npos){
+            max_age = max_age.substr(0, max_age.find(","));
+        }
+        time_t ma_time = (time_t)atoi(max_age.c_str());
+        if (date != header.end()){
+            time_t date_time = get_time((date->second).substr(1));
+            return date_time + ma_time;
+        }else if (age != header.end()) {
+            string age_str = age->second;
+            time_t age_time = (time_t)atoi(age_str.c_str());
+            return now - (age_time - ma_time);
+        } 
+    }
+    return 0; 
+}
 
-bool check_expired(){}
 
 bool can_update(Response response) {
     std::map<std::string, std::string> header = response.get_header();
+    auto cc = header.find("Cache-Control");
+    auto exp = header.find("Expires");
+    auto date = header.find("Date");
+    auto age = header.find("Age");
+
     std::string cache_control;
-    auto it = header.find("Cache-Control");
-    if (it != header.end()) {
-        cache_control = it->second;
+
+    if (cc != header.end()){
+        cache_control = cc->second;
         if (cache_control.find("no-store") != string::npos ||
             cache_control.find("private") != string::npos ||
             cache_control.find("Authorization") != string::npos){
             return false;
         }
+        if(cache_control.find("max-age")!=string::npos) {
+            if (date == header.end() && age == header.end() && exp == header.end()) {
+                return false;
+            }
+        } else {
+            if (exp == header.end()){
+                return false;
+            }
+        }
+    }else{
+        if(exp == header.end()){
+            return false;
+        }
     }
     return true;
+
+//    if(exp != header.end()){
+//        return true;
+//    }
+//
+//    if (cc != header.end()) {
+//        cache_control = cc->second;
+//        if (exp == header.end() && cache_control.find("max-age")==string::npos){
+//            return false;
+//        }
+//        if (cache_control.find("no-store") != string::npos ||
+//            cache_control.find("private") != string::npos ||
+//            cache_control.find("Authorization") != string::npos){
+//            return false;
+//        }
+//    }
+//    if (cc == header.end() && exp == header.end()){
+//        return false;
+//    }
+//    return true;
 }
 
+
+bool revalidation(int remote_fd, Response response, Request request){
+    // construct revalidation request
+    int status;
+    std::map<std::string, std::string> resp_header = response.get_header();
+    std::map<std::string, std::string> req_header = request.get_header();
+    std::string req;
+    std::string req_content;
+    std::string newheader;
+    auto it_etag = resp_header.find("Etag");
+    if (it_etag != resp_header.end()) {
+        newheader += string("\r\n") + string("If-None-Match:") + it_etag->second;
+    }
+    else {
+        auto it_mod = resp_header.find("Last-Modified");
+        if (it_mod != resp_header.end()) {
+            newheader += string("\r\n")+ string("If-Modified-Since:") + it_mod->second;
+        }
+        else {
+            return false;
+        }
+    }
+    req = request.get_request();
+    req_content = req.substr(0, req.find("\r\n\r\n")+4);
+    req_content.insert(req_content.find("\r\n\r\n"), newheader);
+
+    //send revalidation
+    status = send(remote_fd, req_content, strlen(req_content), 0);
+    if (status < 0) {return;}
+    std::vector<char> buffer(999);
+    char* p = buffer.data();
+    status = recv(remote_fd, p, 999, 0);
+    if (status < 0) {return;}
+    std::string s(p);
+
+    // identify code
+    string code = s.substr(s.find(" ") + 1, 3);
+    if (code == "200") {
+        return true;
+    }
+    return false;
+}
+
+//vector<char> recvHeader(int fd){
+//    vector<char> res;
+//    int flag = 0;
+//    char buffer[1];
+//
+//    while(true){
+//        memset(buffer, 0, 1);
+//        if (recv(fd, buffer, 1, 0) == 0){
+//            res.resize(0, 0);
+//            return res;
+//        }
+//        res.push_back(buffer[0]);
+//
+//        if (buffer[0] == '\r'){
+//            if(flag == 0 || flag == 2){
+//                flag++;
+//            }
+//            else {
+//                flag = 1;
+//            }
+//        }
+//        else if(buffer[0] == '\n'){
+//            if (flag == 1 || flag == 3){
+//                flag++;
+//            }
+//            else {
+//                flag = 0;
+//            }
+//        }
+//        else {
+//            flag = 0;
+//        }
+//        if (flag == 4){
+//            break;
+//        }
+//    }
+//    res.push_back('\0');
+//    return res;
+//}
+//
+//vector<char> parseHeader(int fd, vector<char> & client_request_header) {
+//    vector<char> body;
+//    char * pos1 = strstr(client_request_header.data(), "Content-Length:");
+//    char * pos2 = strstr(client_request_header.data(), "Transfer-Encoding:");
+//    if (pos2 != NULL){
+//        client_request_header.pop_back();
+//        return recvHeader(fd);
+//    }
+//    else if (pos1 != NULL){
+//        char * length = strstr(pos1, "\r\n");
+//        char arr[10];
+//        strncpy(arr, pos1+16, length-pos1-16);
+//        arr[length-pos1-16] = 0;
+//        int num = atoi(arr);
+//        vector<char> buf(num+1, 0);
+//        if(num != 0){
+//            recv(fd, buf.data(), num, MSG_WAITALL);
+//            client_request_header.pop_back();
+//        }
+//        return buf;
+//    }
+//    return body;
+//}
+//
+//void sendAll(int fd, vector<char> & target, int size){
+//    int sum = 0;
+//    while(sum != size){
+//        int i = send(fd, target.data() + sum, size-sum, 0);
+//        if (i == -1) {
+//            break;
+//        }
+//        sum += i;
+//    }
+//}
