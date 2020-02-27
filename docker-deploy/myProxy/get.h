@@ -4,9 +4,10 @@
 #include "response.h"
 #include "proxy.h"
 #include <iostream>
+#include <sys/socket.h>
+#include <zconf.h>
 
 using namespace std;
-LRUCache cache(99999);
 
 //void Proxy::get_request(){
 //    std::map<std::string, std::string> request_header = request->get_header();
@@ -37,7 +38,7 @@ LRUCache cache(99999);
 //        if (expired == true) {
 //            std::cout << 'in cache, but expired at ' << expired_time << std::endl;
 //            // refetching
-//            response_refetched = refetching(remote_fd, request);
+//            response_refetched = refetching(server_fd, request);
 //            // update cache
 //            if (can_update(response_refetched) == true) {
 //                cache.update_cache(request_url, response_refetched);

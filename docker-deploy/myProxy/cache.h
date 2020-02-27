@@ -1,71 +1,81 @@
+//
+// Created by 徐颖 on 2/25/20.
+//
+
+#ifndef PROXY_LRU_CACHE_H
+#define PROXY_LRU_CACHE_H
+
+#include <list>
+#include <iterator>
+#include <utility>
+#include <unordered_map>
 #include "response.h"
 #include "request.h"
 #include <string>
-#include <list>
-#include <unordered_map>
 
+
+using namespace std;
+
+/**
+ * Remember to add mutex to handle multithread thing!!
+ */
 class LRUCache {
-private:
-    unordered_map<string, pair<Response, list<string>::iterator>> cache;
-    list<string> keylist;
-    int capacity;
-    //lock
-
+    int cap;
+    // key is the key, value is the iterator of list
+    unordered_map <string, list<pair<string, Response*>>::iterator> my_map;
+    // it->first = key, it->second = value of data.
+    list<pair<string, Response*>> my_list;
 public:
-    LRUCache() {};
-
-    LRUCache(int cap) { 
-        this->capacity = cap; 
+    explicit LRUCache(int capacity): cap(capacity){
     }
-    // maintain cache with lru algorithms
-    void move_cache(
-            unordered_map<string, pair<Response, list<int>::iterator>>::iterator &it,
-            string url, Response response);
-    // check if the url in the cache
-    bool search_cache(string url);
-    // get response from cache
-    Response get_cache(string url); 
-    // insert new entry
-    void insert_cache(string url, Response response); 
-    // update response
-    void update_cache(string url, Response response); 
+    bool contains_key(string key) {
+        auto found_it = my_map.find(key);
+        if (found_it != my_map.end()) {
+            return true;
+        }
+        return false;
+    }
+    // Get the value (will always be positive) of the key if the key exists in the cache,
+    // otherwise return -1.
+    Response* get(string key) {
+        auto found_it = my_map.find(key);
+        if (found_it != my_map.end()) {
+            // key exists, get value
+            auto it = found_it->second;
+            my_list.splice(my_list.begin(), my_list, it);
+            return my_list.begin()->second;
+        }
+        return nullptr;
+    }
+
+    // Set or insert the value if the key is not already present
+    // When the cache reached its capacity,
+    // it should invalidate the least recently used item before inserting a new item
+    void put(string key, Response* value) {
+        auto found_it = my_map.find(key);
+        if (found_it != my_map.end()) {
+            // exist
+            auto it = found_it->second;
+            my_list.splice(my_list.begin(), my_list, it);
+            it->second = value;
+        } else {
+            // does not exist
+            my_list.emplace_front(key, value);
+            my_map[key] = my_list.begin();
+            if (my_map.size() > cap) {
+                string to_be_delete = my_list.back().first;
+                my_list.pop_back();
+                my_map.erase(to_be_delete);
+            }
+        }
+    }
 };
 
-//void LRUCache::move_cache(
-//        unordered_map<string, pair<Response, list<int>::iterator>>::iterator &it,
-//        string url, Response response) {
-//    auto old = it->second.second;
-//    keylist.erase(old);
-//    keylist.push_front(url);
-//    cache[url] = make_pair(response, keylist.begin());
-//}
-//
-//bool LRUCache::search_cache(string url) {
-//    auto it = cache.find(url);
-//    if (it != cache.end()){
-//        return true;
-//    }
-//    return false;
-//}
-//
-//Response LRUCache::get_cache(string url) {
-//    auto it = cache.find(url);
-//    Response response = it->second.first;
-//    move_cache(it, url, response);
-//    return response;
-//}
-//
-//void LRUCache::insert_cache(string url, Response response) {
-//    keylist.push_front(url);
-//    cache[url] = make_pair(response, keylist.begin());
-//    if (cache.size() > capacity) {
-//        string remove_url = keylist.back();
-//        cache.erase(remove_url);
-//        keylist.erase(prev(keylist.end()));
-//    }
-//}
-//
-//void LRUCache::update_cache(string url, Response response) {
-//    keylist.push_front(url);
-//    cache[url] = make_pair(response, keylist.begin());
-//}
+LRUCache cache(99999);
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache* obj = new LRUCache(capacity);
+ * int param_1 = obj->get(key);
+ * obj->put(key,value);
+ */
+#endif //PROXY_LRU_CACHE_H

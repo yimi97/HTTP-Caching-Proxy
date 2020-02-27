@@ -27,6 +27,9 @@ private:
 
 public:
     Request(){}
+    ~Request() {
+        free(&header);
+    }
     Request(std::string s, int id): request(s), method(""), request_line(""), request_uri(""),
     http_version(""), host(""), port(""), request_body(""), uid(id){
         this->request_line = parse_request_line();
@@ -35,7 +38,6 @@ public:
         this->http_version = parse_http_version();
         if (request.find("Host:") != std::string::npos) {
             this->host = parse_host();
-            std::cout << "Constructing...Host" << std::endl;
             this->port = parse_port();
             if (request_uri.find(host) == std::string::npos) {
                 this->full_url = host + request_uri;
@@ -83,7 +85,7 @@ public:
     std::string parse_host(){
         std::string my_host = request.substr(request.find("Host: ") + 6);
         my_host = my_host.substr(0, my_host.find("\r\n"));
-        std::cout << "Constructing..." << my_host << std::endl;
+//        std::cout << "Constructing..." << my_host << std::endl;
         if(my_host.find(":") != string::npos){
             my_host = my_host.substr(0,my_host.find(":"));
         }
@@ -99,6 +101,10 @@ public:
         }
         return "";
     }
+
+    /*
+     * Mi Yi modified.
+     */
     std::map<std::string, std::string> parse_header() {
         string content = request.substr(request.find("\r\n") + 2, request.find("\r\n\r\n"));
         while(content.find("\r\n")!=string::npos) {
@@ -111,7 +117,6 @@ public:
         }
         return header;
     }
-
 
 };
 #endif //PROXY_REQUEST_H

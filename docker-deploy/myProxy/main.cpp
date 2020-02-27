@@ -10,6 +10,7 @@
 #include "proxy.h"
 #include <arpa/inet.h>
 #include <thread>
+#include "cache.h"
 
 #define PORT "8080"  // the port users will be connecting to
 
@@ -64,6 +65,7 @@ int main() {
             return 0;
         }
         // create a new thread for each client connection
+//        proxy_helper(client_fd, client_uid);
         std::thread t(proxy_helper, client_fd, client_uid);
         t.detach();
         client_uid++;
