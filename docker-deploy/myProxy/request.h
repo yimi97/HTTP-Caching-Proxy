@@ -44,6 +44,7 @@ public:
     host_ip(""), recv_time(""){
         time_t now = time(0);
         recv_time = asctime(gmtime(&now));
+
         this->request_line = parse_request_line();
         this->method = parse_method();
         this->request_uri = parse_request_uri();
@@ -59,6 +60,8 @@ public:
         } else {
             this->full_url = request_uri;
         }
+        cout << "uri: " << request_uri << endl;
+        cout << "full url: " << full_url << endl;
         size_t pos = request.find("Content-Length: ");
         if (pos != string::npos) {
             string content = request.substr(request.find("Content-Length: ") + 16);
@@ -68,11 +71,13 @@ public:
             content_length = 0;
         }
         header_length = request.length();
+
     }
 
     Request(const Request &rhs){}
     Request &operator=(const Request &rhs){ return *this; }
 
+    string get_recv_time(){ return this->recv_time; }
     std::string get_request(){ return this->request; }
     std::string get_request_line(){ return request_line; }
     std::string get_method(){ return method; }
@@ -83,6 +88,11 @@ public:
     std::string get_host(){ return host; }
     std::map<std::string, std::string>* get_header(){ return &header; }
 
+//    void parse_host_ip(){
+//        struct sockaddr client_addr;
+//
+//        getpeername(int client_fd, struct sockaddr *addr, int *addrlen);
+//    }
     std::string parse_request_line(){
         return request.substr(0, request.find("\r\n")+2);
     }
@@ -90,12 +100,11 @@ public:
         return request_line.substr(0, request_line.find(" "));
     }
     std::string parse_request_uri(){
-        std::string my_uri = request_line.substr(request_line.find(" ") + 1, request_line.find("\r\n"));
+        std::string my_uri = request_line.substr(request_line.find(" ") + 1);
         my_uri = my_uri.substr(0, my_uri.find(" "));
-        if(my_uri.find(":") != string::npos){
-            my_uri = my_uri.substr(0,my_uri.find(":"));
-        }
-
+//        if(my_uri.find(":") != string::npos){
+//            my_uri = my_uri.substr(0,my_uri.find(":"));
+//        }
         return my_uri;
     }
     std::string parse_http_version(){
