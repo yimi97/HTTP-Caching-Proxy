@@ -16,6 +16,9 @@
 #include "cache.h"
 #include <fstream>
 #include <sys/socket.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+
 #define MYLOG "/var/log/erss/proxy.log"
 const int buffer_size = 65535;
 
@@ -26,6 +29,7 @@ private:
 
     int proxy_id;
     int client_fd;
+    string client_ip;
     int server_fd;
     int content_length;
     ofstream log_flow;
@@ -35,18 +39,16 @@ private:
     std::map<std::string, std::string> *resp_header;
     vector<vector<char>> my_buffer;
     void get_request_from_client();
-    void my_recv_request(int sender_fd, vector<vector<char>>& buf);
     void send_cached_response();
     void connect_request(); // if request.method == "CONNECT"
     bool connect_with_server();
     void send_ack();
     void data_forwarding();
     void re_fetching();
-    void update_cache();
-    bool reply_to_client(Response* res);
     void get_request(); // if request.method == "GET"
+    bool can_get_expinfo(Response* res);
     time_t get_time(string date_or_exp);
-    time_t get_expiration_time();
+    time_t get_expiration_time(Response* res);
     bool revalidation();
     bool can_update();
     size_t my_recv(int fd, vector<vector<char>> &mybuffer);
@@ -71,8 +73,13 @@ public:
     void proxy_run() {
         get_request_from_client();
         if (request == nullptr) {
-            cerr << proxy_id << ": Did not receive any request ENC================" << endl;
+            cout << proxy_id << ": Did not receive any request ENC================" << endl;
+            close(client_fd);
             return;
+        } else {
+            log_flow.open(MYLOG,std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": " << request->get_request_line() << " from " << client_ip << " @ " << request->get_recv_time() << endl;
+            log_flow.close();
         }
         if (request->get_method() == "GET" ) {
             get_request();
@@ -107,29 +114,37 @@ void Proxy::data_forwarding() {
     fd_set readfds; // list listening on
     int fdmax = -1;
     fdmax = (server_fd > client_fd)? server_fd: client_fd;
-
-    while(1) {
+    while(true) {
         FD_ZERO(&readfds);
         FD_SET(server_fd, &readfds);
         FD_SET(client_fd, &readfds);
         int status = select(fdmax + 1, &readfds, nullptr, nullptr, nullptr);
         if (status <= 0) {
-            cerr << proxy_id << ": ERORR" << endl;
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": ERROR Select Failure" << endl;
+            log_flow.close();
             break;
         }
         if (FD_ISSET(server_fd, &readfds)) {
             // recv data from server
             status = recv(server_fd, p, buffer_size, 0);
             if (status < 0) {
-                cout << proxy_id << ": status < 0" << endl;
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": ERROR Receive Data From Server Failure" << endl;
+                log_flow.close();
                 break;
             } else if (status == 0) {
-                cerr << proxy_id << ": Server has closed Tunnel." << endl;
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": Tunnel closed" << endl;
+                log_flow.close();
                 return;
             } else {
                 // forward data to client
                 status = send(client_fd, p, status, 0);
                 if (status == -1) {
+                    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                    log_flow << proxy_id << ": ERROR Transfer Data to Client Failure" << endl;
+                    log_flow.close();
                     break;
                 }
             }
@@ -137,15 +152,22 @@ void Proxy::data_forwarding() {
             // recv data from client
             status = recv(client_fd, p, buffer_size, 0);
             if (status < 0) {
-                cout << proxy_id << ": client status < 0" << endl;
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": ERROR Receive Data From Client Failure" << endl;
+                log_flow.close();
                 break;
             } else if (status == 0) {
-                cerr << proxy_id << ": Client has closed Tunnel." << endl;
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": Tunnel closed" << endl;
+                log_flow.close();
                 return;
             } else {
                 // forward data to server
                 status = send(server_fd, p, status, 0);
                 if (status == -1) {
+                    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                    log_flow << proxy_id << ": ERROR Transfer Data to Server Failure" << endl;
+                    log_flow.close();
                     break;
                 }
             }
@@ -158,7 +180,9 @@ void Proxy::get_request_from_client() {
     my_buffer.clear();
     int len = my_recv(client_fd, my_buffer);
     if (len <= 0) {
-        cerr << "my_recv Failure" << endl;
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": ERROR Receive Request from Client Failure" << endl;
+        log_flow.close();
         return;
     }
     string str = "";
@@ -167,6 +191,28 @@ void Proxy::get_request_from_client() {
         str += my_buffer[i].data();
         i++;
     }
+    /*
+     * Get client's ip address which will be printed in log
+     * Last modified by Ying
+     * ref: https://beej.us/guide/bgnet/html//index.html#connect (getpeername())
+     * */
+    struct sockaddr_storage addr;
+    socklen_t socklen = sizeof(addr);
+    char ipstr[INET6_ADDRSTRLEN];
+    int port;
+    getpeername(client_fd, (struct sockaddr*)&addr, &socklen);
+
+    if (addr.ss_family == AF_INET) {
+        struct sockaddr_in *p = (struct sockaddr_in *)&addr;
+        port = ntohs(p->sin_port);
+        inet_ntop(AF_INET, &p->sin_addr, ipstr, sizeof(ipstr));
+    } else { // AF_INET6
+        struct sockaddr_in6 *p = (struct sockaddr_in6 *)&addr;
+        port = ntohs(p->sin6_port);
+        inet_ntop(AF_INET6, &p->sin6_addr, ipstr, sizeof(ipstr));
+    }
+    client_ip = ipstr;
+
     request = new Request(str, proxy_id);
     req_header = request->get_header();
     cout << endl << "================= " << proxy_id << ": " << request->get_method() << " Request Received =================" << endl;
@@ -234,9 +280,8 @@ void Proxy::get_request(){
     string url = request->get_full_url();
     Response *cached_resp = cache.get(url);
     response_back = cached_resp;
-    cout << "Hi!!! I am in GET!!!!" << endl;
     /*
-         * Mi Yi please take care of this part
+         * Mi Yi taking care of this part
          *
          * if expired, refetching
          * if not expired, check cache-control
@@ -250,24 +295,85 @@ void Proxy::get_request(){
          *
          */
     if (cached_resp != nullptr) {
+        if(!can_get_expinfo(cached_resp)){
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": in cache, no expire info, requires validation" << endl;
+            log_flow.close();
+            bool valid = revalidation();
+            if (valid) {
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": NOTE Re-validation Succeed " << endl;
+                log_flow.close();
+                // =======================================
+                send_cached_response();
+                // TBD ===================================
+                return;
+            }
+            else {
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": NOTE Re-validation Failed, Re-fetching " << endl;
+                log_flow.close();
+                // refetching
+                re_fetching();
+                // update
+                if (can_update()) {
+                    cache.put(request->get_full_url(), response_refetched);
+                    if (can_get_expinfo(response_refetched)) {
+                        time_t refetched_exptime = get_expiration_time(response_refetched);
+                        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                        log_flow << proxy_id << ": cached, expires at " << asctime(gmtime(&refetched_exptime)) << endl;
+                        log_flow.close();
+                    } else {
+                        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                        log_flow << proxy_id << ": cached, but requires re-validation" << endl;
+                        log_flow.close();
+                    }
+                }
+                if(my_send(client_fd, my_buffer) <= 0){
+                    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                    log_flow << proxy_id << ": ERROR Reply to Client Failure" << endl;
+                    log_flow.close();
+                    return;
+                }
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": NOTE Reply to Client Successfully" << endl;
+                log_flow.close();
+                return;
+            }
+        }
         // check if expire
-        cout << proxy_id << ": Hi!!! Found in Cache!!!!" << endl;
-//        cout << proxy_id << ": url: " << url << endl;
-        time_t expired_time = get_expiration_time();
+        time_t expired_time = get_expiration_time(cached_resp);
         time_t now = time(0);
         std::cout << "In cache, expiration time " << asctime(gmtime(&expired_time)) << std::endl;
         if (difftime(now, expired_time)>0) {
-            std::cout << "In cache, but expired at " << asctime(gmtime(&expired_time)) << std::endl;
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": in cache, but expired at " << asctime(gmtime(&expired_time)) << endl;
+            log_flow.close();
             // refetching
             re_fetching();
             // update cache
             if (can_update()) {
                 cache.put(request->get_full_url(), response_refetched);
+                if (can_get_expinfo(response_refetched)) {
+                    time_t refetched_exptime = get_expiration_time(response_refetched);
+                    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                    log_flow << proxy_id << ": cached, expires at " << asctime(gmtime(&refetched_exptime)) << endl;
+                    log_flow.close();
+                } else {
+                    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                    log_flow << proxy_id << ": cached, but requires re-validation" << endl;
+                    log_flow.close();
+                }
             }
-            if(my_send(client_fd, my_buffer) < 0){
-                cerr << "Error: reply to client" << endl;
+            if(my_send(client_fd, my_buffer) <= 0){
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": ERROR Reply to Client Failure" << endl;
+                log_flow.close();
+                return;
             }
-            cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": NOTE Reply to Client Successfully" << endl;
+            log_flow.close();
             return;
         }
         else {// if not expired
@@ -276,48 +382,88 @@ void Proxy::get_request(){
             if (req_it != req_header->end()) {
                 // Found Request Cache-Control
                 string request_cache_control = req_it->second;
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": NOTE Cache-Control: " << request_cache_control << endl;
+                log_flow.close();
                 // no-cahce -> revalidate
                 if (request_cache_control.find("no-cache") != string::npos) {
                     // revalidate
-                    std::cout << "in cache, but need to revalidate" << std::endl;
+                    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                    log_flow << proxy_id << ": in cache, requires re-validation" << endl;
+                    log_flow.close();
                     bool valid = revalidation();
                     if (valid) {
-                        std::cout << "in cache, revalidation succeed, valid" << std::endl;
+                        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                        log_flow << proxy_id << ": NOTE Re-validation Successeed " << endl;
+                        log_flow.close();
                         // =======================================
                         send_cached_response();
-                        cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
                         // TBD ===================================
                         return;
                     }
                     else {
-                        std::cout << "in cache, revalidation failed, refetching" << std::endl;
+                        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                        log_flow << proxy_id << ": NOTE Re-validation Failed, Re-Fetching" << endl;
+                        log_flow.close();
                         // refetching
                         re_fetching();
                         // update
                         if (can_update()) {
                             cache.put(request->get_full_url(), response_refetched);
+                            if (can_get_expinfo(response_refetched)) {
+                                time_t refetched_exptime = get_expiration_time(response_refetched);
+                                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                                log_flow << proxy_id << ": cached, expires at " << asctime(gmtime(&refetched_exptime)) << endl;
+                                log_flow.close();
+                            } else {
+                                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                                log_flow << proxy_id << ": cached, but requires re-validation" << endl;
+                                log_flow.close();
+                            }
                         }
-                        if(my_send(client_fd, my_buffer) < 0){
-                            cerr << "Error: reply to client" << endl;
+                        if(my_send(client_fd, my_buffer) <= 0){
+                            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                            log_flow << proxy_id << ": ERROR Reply to Client Failure" << endl;
+                            log_flow.close();
+                            return;
                         }
-                        cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
+                        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                        log_flow << proxy_id << ": NOTE Reply to Client Successfully" << endl;
+                        log_flow.close();
                         return;
                     }
 
                 }
                 // no-store -> refetching
                 if (req_header->find("no-store")!=req_header->end()){
-                    std::cout << "in cache, but request saying no-store, refetching" << std::endl;
+                    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                    log_flow << proxy_id << ": in cache, requires re-fetching" << endl;
+                    log_flow.close();
                     // refetching
                     re_fetching();
                     // update
                     if (can_update()) {
                         cache.put(request->get_full_url(), response_refetched);
+                        if (can_get_expinfo(response_refetched)) {
+                            time_t refetched_exptime = get_expiration_time(response_refetched);
+                            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                            log_flow << proxy_id << ": cached, expires at " << asctime(gmtime(&refetched_exptime)) << endl;
+                            log_flow.close();
+                        } else {
+                            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                            log_flow << proxy_id << ": cached, but requires re-validation" << endl;
+                            log_flow.close();
+                        }
                     }
-                    if(my_send(client_fd, my_buffer) < 0){
-                        cerr << "Error: reply to client" << endl;
+                    if(my_send(client_fd, my_buffer) <= 0){
+                        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                        log_flow << proxy_id << ": ERROR Reply to Client Failure" << endl;
+                        log_flow.close();
+                        return;
                     }
-                    cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
+                    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                    log_flow << proxy_id << ": NOTE Reply to Client Successfully" << endl;
+                    log_flow.close();
                     return;
                 }
             }
@@ -326,89 +472,130 @@ void Proxy::get_request(){
             auto resp_it = cached_resp_header->find("Cache-Control");
             if (resp_it != cached_resp_header->end()) {
                 string response_cached_cache_control = resp_it->second;
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": NOTE Cache-Control: " << response_cached_cache_control << endl;
+                log_flow.close();
                 if (response_cached_cache_control.find("no-cache") != string::npos ||
                     response_cached_cache_control.find("must-revalidate") != string::npos ||
-                    response_cached_cache_control.find("proxy-revalidate") != string::npos ) {
-                    std::cout << "in cache, but need to revalidate" << std::endl;
+                    response_cached_cache_control.find("proxy-revalidate") != string::npos ||
+                    response_cached_cache_control.find("Authorization") != string::npos) {
+                    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                    log_flow << proxy_id << ": in cache, requires re-validation" << endl;
+                    log_flow.close();
                     bool valid = revalidation();
                     if (valid) {
-                        std::cout << "in cache, revalidation succeed, valid" << std::endl;
+                        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                        log_flow << proxy_id << ": NOTE Re-validation Successeed" << endl;
+                        log_flow.close();
                         // =============================================
                         send_cached_response();
-                        cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
                         // ==============================================
                         return;
                     }
                     else {
-                        std::cout << "in cache, revalidation failed, refetching" << std::endl;
+                        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                        log_flow << proxy_id << ": NOTE Re-validation Failed, Re-fetching" << endl;
+                        log_flow.close();
                         // refetching
                         re_fetching();
                         // update
                         if (can_update()) {
                             cache.put(request->get_full_url(), response_refetched);
+                            if (can_get_expinfo(response_refetched)) {
+                                time_t refetched_exptime = get_expiration_time(response_refetched);
+                                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                                log_flow << proxy_id << ": cached, expires at " << asctime(gmtime(&refetched_exptime)) << endl;
+                                log_flow.close();
+                            } else {
+                                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                                log_flow << proxy_id << ": cached, but requires re-validation" << endl;
+                                log_flow.close();
+                            }
                         }
-                        if(my_send(client_fd, my_buffer) < 0){
-                            cerr << "Error: reply to client" << endl;
+                        // reply to client
+                        if(my_send(client_fd, my_buffer) <= 0){
+                            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                            log_flow << proxy_id << ": ERROR Reply to Client Failure" << endl;
+                            log_flow.close();
+                            return;
                         }
-                        cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
+                        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                        log_flow << proxy_id << ": NOTE Reply to Client Successfully" << endl;
+                        log_flow.close();
                         return;
                     }
                 }
             }
-            std::cout << "in cache, valid" << std::endl;
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": in cache, valid" << endl;
+            log_flow.close();
             send_cached_response();
         }
-        cout << "Found and reply to client successfully" << endl;
     } else {
-        // Not found! Refetching! Get Response from Server
-        cout << proxy_id << ": Not found! Refetching! Get Response from Server" << endl;
+        // Not Found + Re-fetching
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": not in cache" << endl;
+        log_flow.close();
         re_fetching();
-        // Update or Insert Cache -> update_cache()
-        // Need more details like check no store, must revalidation...
+        // Update Cache
         if (can_update()) {
             cache.put(request->get_full_url(), response_refetched);
-            cout << proxy_id << ": Successfully Update Cache!" << endl;
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": NOTE, Update Cache Successfully" << endl;
+            log_flow.close();
+            if (can_get_expinfo(response_refetched)) {
+                time_t refetched_exptime = get_expiration_time(response_refetched);
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": cached, expires at " << asctime(gmtime(&refetched_exptime)) << endl;
+                log_flow.close();
+            } else {
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": cached, but requires re-validation" << endl;
+                log_flow.close();
+            }
         }
         // Reply to Client
         if(my_send(client_fd, my_buffer) <= 0){
-            cerr << "Error: reply to client" << endl;
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": ERROR Reply to Client Failure" << endl;
+            log_flow.close();
+            return;
         }
-        cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": Responding \"" << response_refetched->get_status_line() << "\"" << endl;
+        log_flow.close();
     }
 }
-
-//bool Proxy::reply_to_client(Response* res){
-//    int status = my_send(client_fd, res->get_response().c_str(),
-//                      res->get_response().length(), 0);
-//    if (status == -1) {
-//        cerr << proxy_id << ": Error: cannot send response back to client" << endl;
-//        return false;
-//    }
-//    cout << "=========" << proxy_id << ": successfully answer the client ==========" << endl;
-//    return true;
-//}
 
 void Proxy::re_fetching(){
     if (!connect_with_server()) {
         return;
     }
+    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+    log_flow << proxy_id << ": Requesting \"" << request->get_request_line() << "\" from " << request->get_host() << endl;
+    log_flow.close();
     int status = my_send(server_fd, my_buffer);
-    if (status == -1) {
-        // log
-        cerr << proxy_id << ": Error: cannot send request to server" << endl;
+    if (status <= 0) {
+        // request failure
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": ERROR Send Request to Server Failure" << endl;
+        log_flow.close();
         return;
     }
-    cout << "=========== " << proxy_id << ": Sent Request Successfully in re_fetching =========" << endl;
+    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+    log_flow << proxy_id << ": NOTE Send Request to Server Successfully" << endl;
+    log_flow.close();
     my_buffer.clear();
     size_t len = my_recv(server_fd, my_buffer);
-    if (len < 0) {
-        cerr << "loop recv failure" << endl;
-        return;
-    } else if (len == 0) {
-        cerr << "close tunnel" << endl;
+    if (len <= 0) {
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": ERROR Receive Response from Server Failure" << endl;
+        log_flow.close();
         return;
     }
-//    cout << proxy_id << ": Received Successfully in re_fetching" << endl;
+    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+    log_flow << proxy_id << ": NOTE Receive Response from Server Successfully" << endl;
+    log_flow.close();
     string str = "";
     int i = 0;
     while(i < my_buffer.size()){
@@ -416,14 +603,24 @@ void Proxy::re_fetching(){
         i++;
     }
     response_refetched = new Response(str);
+    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+    log_flow << proxy_id << ": Received \"" << response_refetched->get_status_line() << "\" from " << request->get_host() << endl;
+    log_flow.close();
+    return;
 }
 
 void Proxy::post_request() {
     re_fetching();
-    if(my_send(client_fd, my_buffer) < 0){
-        cerr << "Error: reply to client" << endl;
+    if(my_send(client_fd, my_buffer) <= 0){
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": ERROR Reply to Client Fauilure" << endl;
+        log_flow.close();
+        return;
     }
-    cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
+    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+    log_flow << proxy_id << ": NOTE Reply to Client Successfully" << endl;
+    log_flow.close();
+    return;
 }
 
 bool Proxy::revalidation(){
@@ -431,19 +628,29 @@ bool Proxy::revalidation(){
     int status;
     Response *cached_resp = cache.get(request->get_full_url());
     if (cached_resp == nullptr) {
-        cerr << "Error: Cache Not Found" << endl;
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": ERROR Cached-Response Not Found" << endl;
+        log_flow.close();
         return false;
     }
     std::map<std::string, std::string> *cached_resp_header = cached_resp->get_header();
     std::string newheader = "";
     auto it_etag = cached_resp_header->find("Etag");
     if (it_etag != cached_resp_header->end()) {
-        newheader += string("\r\n") + string("If-None-Match:") + it_etag->second;
+        string etag_str = it_etag->second;
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": NOTE ETag: " << etag_str << endl;
+        log_flow.close();
+        newheader += string("\r\n") + string("If-None-Match:") + etag_str;
     }
     else {
         auto it_mod = cached_resp_header->find("Last-Modified");
         if (it_mod != cached_resp_header->end()) {
-            newheader += string("\r\n")+ string("If-Modified-Since:") + it_mod->second;
+            string lst_mdf_str = it_mod->second;
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": NOTE Last-Modified: " << lst_mdf_str << endl;
+            log_flow.close();
+            newheader += string("\r\n")+ string("If-Modified-Since:") + lst_mdf_str;
         }
         else {
             return false;
@@ -454,56 +661,96 @@ bool Proxy::revalidation(){
     req_content.insert(req_content.find("\r\n\r\n"), newheader);
     //send revalidation
     status = send(server_fd, req_content.c_str(), req_content.length(), 0);
-    if (status < 0) {
+    if (status <= 0) {
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": ERROR Send Re-validation Request Failure" << endl;
+        log_flow.close();
         return false;
     }
     std::vector<char> buffer(999);
     char* p = buffer.data();
     status = recv(server_fd, p, 999, 0);
-    if (status < 0) {
+    if (status <= 0) {
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": ERROR Receive Re-validation Response Failure" << endl;
+        log_flow.close();
         return false;
     }
     std::string s(p);
-
     // identify code
     string code = s.substr(s.find(" ") + 1, 3);
-    if (code == "200") {
+    if (code == "304") {
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": NOTE Received 304 from Server" << endl;
+        log_flow.close();
         return true;
     }
+    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+    log_flow << proxy_id << ": NOTE Received NOT 304 from Server" << endl;
+    log_flow.close();
     return false;
 }
 
+//bool Proxy::can_update() {
+//    std::map<std::string, std::string> *header = response_refetched->get_header();
+//    auto cc = header->find("Cache-Control");
+//    auto exp = header->find("Expires");
+//    auto date = header->find("Date");
+//    auto age = header->find("Age");
+//
+//    std::string cache_control;
+//
+//    if (cc != header->end()){
+//        cache_control = cc->second;
+//        if (cache_control.find("no-store") != string::npos ||
+//            cache_control.find("private") != string::npos ||
+//            cache_control.find("Authorization") != string::npos){
+//            cerr << proxy_id << ": Cannot Cache, no-store/private/Authorization" << endl;
+//            return false;
+//        }
+//        if(cache_control.find("max-age")!=string::npos) {
+//            if (date == header->end() && age == header->end() && exp == header->end()) {
+//                cerr << proxy_id << ": Cannot Cache, only max-age" << endl;
+//                return false;
+//            }
+//        } else {
+//            if (exp == header->end()){
+//                cerr << proxy_id << ": Cannot Cache, no max-age and expire" << endl;
+//                return false;
+//            }
+//        }
+//    }else{
+//        if(exp == header->end()){
+//            cerr << proxy_id << ": Cannot Cache, no cache control and expire" << endl;
+//            return false;
+//        }
+//    }
+//    return true;
+//}
+
+
 bool Proxy::can_update() {
+    cout << "can_update" << endl;
     std::map<std::string, std::string> *header = response_refetched->get_header();
     auto cc = header->find("Cache-Control");
     auto exp = header->find("Expires");
     auto date = header->find("Date");
     auto age = header->find("Age");
-
     std::string cache_control;
-
-    if (cc != header->end()){
+    if (cc != header->end()) {
         cache_control = cc->second;
-        if (cache_control.find("no-store") != string::npos ||
-            cache_control.find("private") != string::npos ||
-            cache_control.find("Authorization") != string::npos){
-            cerr << proxy_id << ": Cannot Cache, no-store/private/Authorization" << endl;
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": NOTE Cache-Control: " << cache_control << endl;
+        log_flow.close();
+        if (cache_control.find("no-store") != string::npos) {
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": not cacheable because no-store" << endl;
+            log_flow.close();
             return false;
-        }
-        if(cache_control.find("max-age")!=string::npos) {
-            if (date == header->end() && age == header->end() && exp == header->end()) {
-                cerr << proxy_id << ": Cannot Cache, only max-age" << endl;
-                return false;
-            }
-        } else {
-            if (exp == header->end()){
-                cerr << proxy_id << ": Cannot Cache, no max-age and expire" << endl;
-                return false;
-            }
-        }
-    }else{
-        if(exp == header->end()){
-            cerr << proxy_id << ": Cannot Cache, no cache control and expire" << endl;
+        } else if (cache_control.find("private") != string::npos) {
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": not cacheable because private" << endl;
+            log_flow.close();
             return false;
         }
     }
@@ -522,8 +769,8 @@ time_t Proxy::get_time(string date_or_exp) {
     return t;
 }
 
-time_t Proxy::get_expiration_time(){
-    std::map<std::string, std::string> *header = response_back->get_header();
+time_t Proxy::get_expiration_time(Response* res){
+    std::map<std::string, std::string> *header = res->get_header();
     auto cc = header->find("Cache-Control");
     auto exp = header->find("Expires");
     time_t now = time(0);
@@ -558,8 +805,10 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
     vector<char> first_buf(65535);
     char *p = first_buf.data();
     size_t len = 0;
-    if((len = recv(fd, p, 65535, 0))<=0){
-        cerr << proxy_id << ": first recv " << len << " failure" << endl;
+    if((len = recv(fd, p, 65535, 0)) <= 0){
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": ERROR my_recv() First Receive Failure" << endl;
+        log_flow.close();
         return len;
     }
     mybuffer.push_back(first_buf);
@@ -572,15 +821,23 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
     auto pos_clen = header_str.find("Content-Length: ");
     if(pos_chk != string::npos) {
         // chunked
-        cout << "chunked" << endl;
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": NOTE chunked" << endl;
+        log_flow.close();
         while(true) {
             size_t once_len;
             if((once_len = continue_recv(fd)) <= 0) {
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": ERROR my_recv() chunked Loop Receive Failure" << endl;
+                log_flow.close();
                 return len;
             }
             len += once_len;
             vector<char> last_buf = mybuffer[mybuffer.size()-1];
             if (strstr(last_buf.data(), "0\r\n\r\n") != nullptr) {
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": NOTE last chunk arrived" << endl;
+                log_flow.close();
                 break;
             }
         }
@@ -591,17 +848,20 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
         string content = header_str.substr(header_str.find("Content-Length: "));
         content = content.substr(16, content.find("\r\n"));
         size_t total = (size_t)atoi(content.c_str());
-
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": NOTE Content-Length: " << total << endl;
+        log_flow.close();
         // if cur_len < total_content_length + header_size
         while (len < total + header_str.size()){
             size_t once_len = 0;
             if((once_len = continue_recv(fd)) <= 0){
-                cerr << "continue recv failure" << endl;
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": ERROR my_recv() content-length Loop Receive Failure" << endl;
+                log_flow.close();
                 return len;
             }
             len += once_len;
         }
-        cout << "Content-Length: " << total << endl;
         return len;
     }
     return len;
@@ -622,24 +882,55 @@ size_t Proxy::my_send(int fd, vector<vector<char>>& buf) {
     size_t len = 0;
     int sent = 0;
     while(sent != buf.size()) {
-        //int once_len = send(fd, mybuffer[i].data(), mybuffer[i].size(), 0));
-        // MSG_NOSIGNAL not found;
         int once_len = send(fd, buf[sent].data(), buf[sent].size(), 0);
         if (once_len <=0){
-            cerr << proxy_id << ":my_send Failed" << endl;
             return once_len;
         }
         len += once_len;
         sent += 1;
     }
-    cout << proxy_id << ": sent " << len << " bytes" << endl;
     return len;
 }
 
+bool Proxy::can_get_expinfo(Response* res){
+    std::map<std::string, std::string> *header = res->get_header();
+    auto cc = header->find("Cache-Control");
+    auto exp = header->find("Expires");
+    auto date = header->find("Date");
+    auto age = header->find("Age");
+    std::string cache_control;
+
+    if (cc != header->end()){
+        cache_control = cc->second;
+        if(cache_control.find("max-age")!=string::npos) {
+            if (date == header->end() && age == header->end() && exp == header->end()) {
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": NOTE only max-age, no exp or date or age" << endl;
+                log_flow.close();
+                return false;
+            }
+        } else {
+            if (exp == header->end()){
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": NOTE no max-age and expire" << endl;
+                log_flow.close();
+                return false;
+            }
+        }
+    }else{
+        if(exp == header->end()){
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": NOTE no cache control and expire" << endl;
+            log_flow.close();
+            return false;
+        }
+    }
+    return true;
+}
 
 void resp_to_buf(vector<vector<char>> &mybuffer, string response){
     size_t temp_size = 0;
-    size_t full_size = 5;
+    size_t full_size = buffer_size;
     size_t remain_size = response.size();
     string content;
     while(remain_size > 0) {
@@ -663,8 +954,14 @@ void Proxy::send_cached_response(){
     resp_to_buf(my_buffer, resp_str);
     size_t len = my_send(client_fd, my_buffer);
     if (len <= 0) {
-        cerr << proxy_id << ": Reply to Client Failure" << endl;
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": NOTE Send Cached-Response Back Failure" << endl;
+        log_flow.close();
+        return;
     }
+    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+    log_flow << proxy_id << ": NOTE Send Cached-Response Back Successfully" << endl;
+    log_flow.close();
     return;
 }
 #endif //PROXY_PROXY_H
