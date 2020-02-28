@@ -84,7 +84,7 @@ public:
     std::map<std::string, std::string>* get_header(){ return &header; }
 
     std::string parse_request_line(){
-        return request.substr(0, request.find("\r\n"));
+        return request.substr(0, request.find("\r\n")+2);
     }
     std::string parse_method(){
         return request_line.substr(0, request_line.find(" "));
