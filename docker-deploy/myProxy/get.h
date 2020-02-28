@@ -26,13 +26,10 @@ void GET(Request request, int remote_fd, int client_fd){
 
     bool response_in_cache = cache.search_cache(request_url);
     bool expired;
-    bool revalidation(Response response, Request request);
     bool valid;
     int status;
     time_t expired_time;
     time_t now = time(0);
-    bool can_update(Response response);
-    bool check_expired(std::map<std::string, std::string> header);
     
     // in cache
     if(response_in_cache == true){
@@ -350,70 +347,3 @@ bool revalidation(int remote_fd, Response response, Request request){
 //    }
 //}
 
-char* Proxy::header_recv(int sender_fd) {
-    std::vector<char> buffer(buffer_size);
-    char *p = buffer.data();
-    int len = 0;
-    len = recv(sender_fd, p, buffer_size, 0);
-    if (len < 0) {
-        exit(1);
-    }
-    string cur_string(buffer.begin(), buffer.end());
-    int total = len;
-    while (cur_string.find("\r\n\r\n") == string::npos) {
-        // if not finish
-        buffer.resize(total + buffer_size);
-        p = buffer.data() + total;
-        len = recv(sender_fd, p, buffer_size, 0);
-        if (len < 0){
-            exit(1);
-        }
-        total += len;
-        cur_string = buffer.data();
-    }
-    return buffer.data();
-    // memory leak, free buffer!
-}
-
-vector<char> Proxy::header_recv(int sender_fd){
-    std::vector<char> buffer(2000);
-    char *p = buffer.data();
-    int len = 0;
-    len = recv(sender_fd, p, buffer_size, 0);
-    if (len < 0) {
-        exit(1);
-    }
-    string s(buffer.begin(), buffer.end());
-    if(s.find("\r\n\r\n")!=string::npos){
-        s = s.substr(0, s.find("\r\n\r\n")+4);
-        return vector<char> header(s.begin(),s.end());
-    }
-    //return no header
-}
-vector<char> Proxy::continue_recv(int sender_fd, vector<char> &header){
-    vector<char> body;
-    auto pos_chk = strstr(header.date(), "chunked");
-    auto pos_clen = strstr(header.date(), "Content-Length:");
-//    if(pos_chk != NULL) {
-//        header.pop_back();
-//        return handle_chunk(sender_fd);
-//    }
-//    else
-    if(pos_clen != nullptr) {
-        string content(header.begin(), header.end());
-        content = content.substr(content.find("Content-Length: "));
-        content = content.substr(16, content.find("\r\n"));
-        int length = (int)atoi(content.c_str());
-        vector<char> newbuffer(length+1, 0);
-        if (length != 0){
-            recv(sender_fd, newbuffer.data(), length, MSG_WAITALL);
-            header.pop_back();
-        }
-        return newbuffer;
-    }
-    return body;
-}
-
-vector<char> Proxy::handle_chunk(int sender_fd) {
-
-}
