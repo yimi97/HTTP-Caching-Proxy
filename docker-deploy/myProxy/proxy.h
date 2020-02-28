@@ -30,6 +30,7 @@ private:
     vector<vector<char>> my_buffer;
     void get_request_from_client();
     void my_recv_request(int sender_fd, vector<vector<char>>& buf);
+    void send_cached_response();
     void connect_request(); // if request.method == "CONNECT"
     bool connect_with_server();
     void send_ack();
@@ -63,6 +64,10 @@ public:
 
     void proxy_run() {
         get_request_from_client();
+        if (request == nullptr) {
+            cerr << proxy_id << ": Did not receive any request ENC================" << endl;
+            return;
+        }
         if (request->get_method() == "GET" ) {
             get_request();
             std::cout << "================ " << proxy_id << ": GET-END ================" << std::endl;
@@ -75,11 +80,6 @@ public:
             post_request();
             std::cout << "================ " << proxy_id << ": POST-END================" << std::endl;
         }
-        free(req_header);
-        free(resp_header);
-        free(request);
-        free(response_refetched);
-        free(response_back);
         close(client_fd);
         close(server_fd);
         return;
@@ -146,40 +146,6 @@ void Proxy::data_forwarding() {
         }
     } // while
 }
-
-//void Proxy::my_recv_request(int sender_fd, vector<vector<char>> &buffer) {
-//    vector<char> buf(buffer_size);
-//    char *p = buf.data();
-//    int len = 0;
-//    len = recv(sender_fd, p, buffer_size, 0);
-//    if (len < 0) {
-//        cerr << proxy_id << ": Receive Request Failure" << endl;
-//        return;
-//    } else if (len == 0) {
-//        cerr << proxy_id << ": Client sent 0" << endl;
-//        return;
-//    }
-//    buffer.push_back(buf);
-//    string cur_string(buf.begin(), buf.end());
-//    int total = len;
-//    string header = cur_string.substr(0, cur_string.find("\r\n\r\n") + 4);
-//    request = new Request(header, proxy_id, &buffer);
-//    while(true){
-//        if (total == request->get_content_len() + request->get_header_len()) {
-//            break;
-//        }
-//        size_t size = request->get_content_len() + request->get_header_len() - total;
-//        vector<char> once_buf(size);
-//        char *once_p = once_buf.data();
-//        len = recv(client_fd, once_p, size, 0);
-//        if (len <= 0) {
-//            break;
-//        }
-//        buffer.push_back(once_buf);
-//        total += len;
-//    }
-////    cout << proxy_id << ": Received " << total << " bytes from client" << endl;
-//}
 
 void Proxy::get_request_from_client() {
     // get request from client
@@ -262,6 +228,7 @@ void Proxy::get_request(){
     string url = request->get_full_url();
     Response *cached_resp = cache.get(url);
     response_back = cached_resp;
+    cout << "Hi!!! I am in GET!!!!" << endl;
     /*
          * Mi Yi please take care of this part
          *
@@ -278,116 +245,111 @@ void Proxy::get_request(){
          */
     if (cached_resp != nullptr) {
         // check if expire
-        time_t expired_time = get_expiration_time();
-        time_t now = time(0);
-        if (difftime(now, expired_time)>0) {
-            std::cout << "In cache, but expired at " << asctime(gmtime(&expired_time)) << std::endl;
-            // refetching
-            re_fetching();
-            // update cache
-            if (can_update()) {
-                cache.put(request->get_full_url(), response_refetched);
-            }
-            if(my_send(client_fd, my_buffer) < 0){
-                cerr << "Error: reply to client" << endl;
-            }
-            cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
-            return;
-        }
-        else {// if not expired
-            // request cache-control
-            auto req_it = req_header->find("Cache-Control");
-            if (req_it != req_header->end()) {
-                // Found Request Cache-Control
-                string request_cache_control = req_it->second;
-                // no-cahce -> revalidate
-                if (request_cache_control.find("no-cache") != string::npos) {
-                    // revalidate
-                    std::cout << "in cache, but need to revalidate" << std::endl;
-                    bool valid = revalidation();
-                    if (valid) {
-                        std::cout << "in cache, revalidation succeed, valid" << std::endl;
-                        // =======================================
-                        if(my_send(client_fd, my_buffer) < 0){
-                            cerr << "Error: reply to client" << endl;
-                        }
-                        cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
-                        // TBD ===================================
-                        return;
-                    }
-                    else {
-                        std::cout << "in cache, revalidation failed, refetching" << std::endl;
-                        // refetching
-                        re_fetching();
-                        // update
-                        if (can_update()) {
-                            cache.put(request->get_full_url(), response_refetched);
-                        }
-                        if(my_send(client_fd, my_buffer) < 0){
-                            cerr << "Error: reply to client" << endl;
-                        }
-                        cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
-                        return;
-                    }
-
-                }
-                // no-store -> refetching
-                if (req_header->find("no-store")!=req_header->end()){
-                    std::cout << "in cache, but request saying no-store, refetching" << std::endl;
-                    // refetching
-                    re_fetching();
-                    // update
-                    if (can_update()) {
-                        cache.put(request->get_full_url(), response_refetched);
-                    }
-                    if(my_send(client_fd, my_buffer) < 0){
-                        cerr << "Error: reply to client" << endl;
-                    }
-                    cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
-                    return;
-                }
-            }
-            // response cache-control
-            std::map<string, string> *cached_resp_header = cached_resp->get_header();
-            auto resp_it = cached_resp_header->find("Cache-Control");
-            if (resp_it != cached_resp_header->end()) {
-                string response_cached_cache_control = resp_it->second;
-                if (response_cached_cache_control.find("no-cache") != string::npos ||
-                    response_cached_cache_control.find("must-revalidate") != string::npos ||
-                    response_cached_cache_control.find("proxy-revalidate") != string::npos ) {
-                    std::cout << "in cache, but need to revalidate" << std::endl;
-                    bool valid = revalidation();
-                    if (valid) {
-                        std::cout << "in cache, revalidation succeed, valid" << std::endl;
-                        // =============================================
-                        if(my_send(client_fd, my_buffer) < 0){
-                            cerr << "Error: reply to client" << endl;
-                        }
-                        cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
-                        // ==============================================
-                        return;
-                    }
-                    else {
-                        std::cout << "in cache, revalidation failed, refetching" << std::endl;
-                        // refetching
-                        re_fetching();
-                        // update
-                        if (can_update()) {
-                            cache.put(request->get_full_url(), response_refetched);
-                        }
-                        if(my_send(client_fd, my_buffer) < 0){
-                            cerr << "Error: reply to client" << endl;
-                        }
-                        cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
-                        return;
-                    }
-                }
-            }
-            std::cout << "in cache, valid" << std::endl;
-            if(!reply_to_client(cached_resp)){
-                cerr << "Error: reply to client" << endl;
-            }
-        }
+//        cout << "Hi!!! Found in Cache!!!!" << endl;
+//        time_t expired_time = get_expiration_time();
+//        time_t now = time(0);
+//        if (difftime(now, expired_time)>0) {
+//            std::cout << "In cache, but expired at " << asctime(gmtime(&expired_time)) << std::endl;
+//            // refetching
+//            re_fetching();
+//            // update cache
+//            if (can_update()) {
+//                cache.put(request->get_full_url(), response_refetched);
+//            }
+//            if(my_send(client_fd, my_buffer) < 0){
+//                cerr << "Error: reply to client" << endl;
+//            }
+//            cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
+//            return;
+//        }
+//        else {// if not expired
+//            // request cache-control
+//            auto req_it = req_header->find("Cache-Control");
+//            if (req_it != req_header->end()) {
+//                // Found Request Cache-Control
+//                string request_cache_control = req_it->second;
+//                // no-cahce -> revalidate
+//                if (request_cache_control.find("no-cache") != string::npos) {
+//                    // revalidate
+//                    std::cout << "in cache, but need to revalidate" << std::endl;
+//                    bool valid = revalidation();
+//                    if (valid) {
+//                        std::cout << "in cache, revalidation succeed, valid" << std::endl;
+//                        // =======================================
+//                        send_cached_response();
+//                        cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
+//                        // TBD ===================================
+//                        return;
+//                    }
+//                    else {
+//                        std::cout << "in cache, revalidation failed, refetching" << std::endl;
+//                        // refetching
+//                        re_fetching();
+//                        // update
+//                        if (can_update()) {
+//                            cache.put(request->get_full_url(), response_refetched);
+//                        }
+//                        if(my_send(client_fd, my_buffer) < 0){
+//                            cerr << "Error: reply to client" << endl;
+//                        }
+//                        cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
+//                        return;
+//                    }
+//
+//                }
+//                // no-store -> refetching
+//                if (req_header->find("no-store")!=req_header->end()){
+//                    std::cout << "in cache, but request saying no-store, refetching" << std::endl;
+//                    // refetching
+//                    re_fetching();
+//                    // update
+//                    if (can_update()) {
+//                        cache.put(request->get_full_url(), response_refetched);
+//                    }
+//                    if(my_send(client_fd, my_buffer) < 0){
+//                        cerr << "Error: reply to client" << endl;
+//                    }
+//                    cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
+//                    return;
+//                }
+//            }
+//            // response cache-control
+//            std::map<string, string> *cached_resp_header = cached_resp->get_header();
+//            auto resp_it = cached_resp_header->find("Cache-Control");
+//            if (resp_it != cached_resp_header->end()) {
+//                string response_cached_cache_control = resp_it->second;
+//                if (response_cached_cache_control.find("no-cache") != string::npos ||
+//                    response_cached_cache_control.find("must-revalidate") != string::npos ||
+//                    response_cached_cache_control.find("proxy-revalidate") != string::npos ) {
+//                    std::cout << "in cache, but need to revalidate" << std::endl;
+//                    bool valid = revalidation();
+//                    if (valid) {
+//                        std::cout << "in cache, revalidation succeed, valid" << std::endl;
+//                        // =============================================
+//                        send_cached_response();
+//                        cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
+//                        // ==============================================
+//                        return;
+//                    }
+//                    else {
+//                        std::cout << "in cache, revalidation failed, refetching" << std::endl;
+//                        // refetching
+//                        re_fetching();
+//                        // update
+//                        if (can_update()) {
+//                            cache.put(request->get_full_url(), response_refetched);
+//                        }
+//                        if(my_send(client_fd, my_buffer) < 0){
+//                            cerr << "Error: reply to client" << endl;
+//                        }
+//                        cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
+//                        return;
+//                    }
+//                }
+//            }
+//            std::cout << "in cache, valid" << std::endl;
+//            send_cached_response();
+//        }
         cout << "Found and reply to client successfully" << endl;
     } else {
         // Not found! Refetching! Get Response from Server
@@ -397,31 +359,32 @@ void Proxy::get_request(){
         // Need more details like check no store, must revalidation...
         if (can_update()) {
             cache.put(request->get_full_url(), response_refetched);
+            cout << proxy_id << ": Successfully Update Cache!" << endl;
         }
         // Reply to Client
-        if(my_send(client_fd, my_buffer) < 0){
+        if(my_send(client_fd, my_buffer) <= 0){
             cerr << "Error: reply to client" << endl;
         }
         cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
     }
 }
 
-bool Proxy::reply_to_client(Response* res){
-    int status = send(client_fd, res->get_response().c_str(),
-                      res->get_response().length(), 0);
-    if (status == -1) {
-        cerr << proxy_id << ": Error: cannot send response back to client" << endl;
-        return false;
-    }
-    cout << "=========" << proxy_id << ": successfully answer the client ==========" << endl;
-    return true;
-}
+//bool Proxy::reply_to_client(Response* res){
+//    int status = my_send(client_fd, res->get_response().c_str(),
+//                      res->get_response().length(), 0);
+//    if (status == -1) {
+//        cerr << proxy_id << ": Error: cannot send response back to client" << endl;
+//        return false;
+//    }
+//    cout << "=========" << proxy_id << ": successfully answer the client ==========" << endl;
+//    return true;
+//}
 
 void Proxy::re_fetching(){
     if (!connect_with_server()) {
         return;
     }
-    int status = send(server_fd, request->get_request().c_str(), request->get_request().length(), 0);
+    int status = my_send(server_fd, my_buffer);
     if (status == -1) {
         // log
         cerr << proxy_id << ": Error: cannot send request to server" << endl;
@@ -611,10 +574,11 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
         return len;
     }
     else if(pos_clen != string::npos) {
-        cout << "Content-Length:" << endl;
+
         string content = header_str.substr(header_str.find("Content-Length: "));
         content = content.substr(16, content.find("\r\n"));
         size_t total = (size_t)atoi(content.c_str());
+
         // if cur_len < total_content_length + header_size
         while (len < total + header_str.size()){
             size_t once_len = 0;
@@ -624,6 +588,7 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
             }
             len += once_len;
         }
+        cout << "Content-Length: " << total << endl;
         return len;
     }
     return len;
@@ -633,7 +598,7 @@ size_t Proxy::continue_recv(int fd) {
     vector<char> continue_buf(65535);
     char *p = continue_buf.data();
     size_t once_len = 0;
-    if((once_len = recv(fd, p, 65535, 0)) <=0 ){
+    if((once_len = recv(fd, p, 65535, 0)) <= 0){
         return once_len;
     }
     my_buffer.push_back(continue_buf);
@@ -648,12 +613,45 @@ size_t Proxy::my_send(int fd, vector<vector<char>>& buf) {
         // MSG_NOSIGNAL not found;
         int once_len = send(fd, buf[sent].data(), buf[sent].size(), 0);
         if (once_len <=0){
+            cerr << proxy_id << ":my_send Failed" << endl;
             return once_len;
         }
         len += once_len;
         sent += 1;
     }
+    cout << proxy_id << ": sent " << len << " bytes" << endl;
     return len;
 }
 
+
+void resp_to_buf(vector<vector<char>> &mybuffer, string response){
+    size_t temp_size = 0;
+    size_t full_size = 5;
+    size_t remain_size = response.size();
+    string content;
+    while(remain_size > 0) {
+        if(remain_size < full_size) {
+            content = response.substr(temp_size, remain_size);
+            vector<char> temp(content.begin() , content.end());
+            mybuffer.push_back(temp);
+            break;
+        }
+        content = response.substr(temp_size, full_size);
+        vector<char> temp(content.begin() , content.end());
+        mybuffer.push_back(temp);
+        temp_size = temp_size + full_size;
+        remain_size = remain_size - full_size;
+    }
+}
+
+void Proxy::send_cached_response(){
+    string resp_str = response_back->get_response();
+    my_buffer.clear();
+    resp_to_buf(my_buffer, resp_str);
+    size_t len = my_send(client_fd, my_buffer);
+    if (len <= 0) {
+        cerr << proxy_id << ": Reply to Client Failure" << endl;
+    }
+    return;
+}
 #endif //PROXY_PROXY_H
