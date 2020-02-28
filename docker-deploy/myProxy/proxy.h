@@ -244,112 +244,112 @@ void Proxy::get_request(){
          *
          */
     if (cached_resp != nullptr) {
-        // check if expire
-//        cout << "Hi!!! Found in Cache!!!!" << endl;
-//        time_t expired_time = get_expiration_time();
-//        time_t now = time(0);
-//        if (difftime(now, expired_time)>0) {
-//            std::cout << "In cache, but expired at " << asctime(gmtime(&expired_time)) << std::endl;
-//            // refetching
-//            re_fetching();
-//            // update cache
-//            if (can_update()) {
-//                cache.put(request->get_full_url(), response_refetched);
-//            }
-//            if(my_send(client_fd, my_buffer) < 0){
-//                cerr << "Error: reply to client" << endl;
-//            }
-//            cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
-//            return;
-//        }
-//        else {// if not expired
-//            // request cache-control
-//            auto req_it = req_header->find("Cache-Control");
-//            if (req_it != req_header->end()) {
-//                // Found Request Cache-Control
-//                string request_cache_control = req_it->second;
-//                // no-cahce -> revalidate
-//                if (request_cache_control.find("no-cache") != string::npos) {
-//                    // revalidate
-//                    std::cout << "in cache, but need to revalidate" << std::endl;
-//                    bool valid = revalidation();
-//                    if (valid) {
-//                        std::cout << "in cache, revalidation succeed, valid" << std::endl;
-//                        // =======================================
-//                        send_cached_response();
-//                        cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
-//                        // TBD ===================================
-//                        return;
-//                    }
-//                    else {
-//                        std::cout << "in cache, revalidation failed, refetching" << std::endl;
-//                        // refetching
-//                        re_fetching();
-//                        // update
-//                        if (can_update()) {
-//                            cache.put(request->get_full_url(), response_refetched);
-//                        }
-//                        if(my_send(client_fd, my_buffer) < 0){
-//                            cerr << "Error: reply to client" << endl;
-//                        }
-//                        cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
-//                        return;
-//                    }
-//
-//                }
-//                // no-store -> refetching
-//                if (req_header->find("no-store")!=req_header->end()){
-//                    std::cout << "in cache, but request saying no-store, refetching" << std::endl;
-//                    // refetching
-//                    re_fetching();
-//                    // update
-//                    if (can_update()) {
-//                        cache.put(request->get_full_url(), response_refetched);
-//                    }
-//                    if(my_send(client_fd, my_buffer) < 0){
-//                        cerr << "Error: reply to client" << endl;
-//                    }
-//                    cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
-//                    return;
-//                }
-//            }
-//            // response cache-control
-//            std::map<string, string> *cached_resp_header = cached_resp->get_header();
-//            auto resp_it = cached_resp_header->find("Cache-Control");
-//            if (resp_it != cached_resp_header->end()) {
-//                string response_cached_cache_control = resp_it->second;
-//                if (response_cached_cache_control.find("no-cache") != string::npos ||
-//                    response_cached_cache_control.find("must-revalidate") != string::npos ||
-//                    response_cached_cache_control.find("proxy-revalidate") != string::npos ) {
-//                    std::cout << "in cache, but need to revalidate" << std::endl;
-//                    bool valid = revalidation();
-//                    if (valid) {
-//                        std::cout << "in cache, revalidation succeed, valid" << std::endl;
-//                        // =============================================
-//                        send_cached_response();
-//                        cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
-//                        // ==============================================
-//                        return;
-//                    }
-//                    else {
-//                        std::cout << "in cache, revalidation failed, refetching" << std::endl;
-//                        // refetching
-//                        re_fetching();
-//                        // update
-//                        if (can_update()) {
-//                            cache.put(request->get_full_url(), response_refetched);
-//                        }
-//                        if(my_send(client_fd, my_buffer) < 0){
-//                            cerr << "Error: reply to client" << endl;
-//                        }
-//                        cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
-//                        return;
-//                    }
-//                }
-//            }
-//            std::cout << "in cache, valid" << std::endl;
-//            send_cached_response();
-//        }
+        check if expire
+       cout << "Hi!!! Found in Cache!!!!" << endl;
+       time_t expired_time = get_expiration_time();
+       time_t now = time(0);
+       if (difftime(now, expired_time)>0) {
+           std::cout << "In cache, but expired at " << asctime(gmtime(&expired_time)) << std::endl;
+           // refetching
+           re_fetching();
+           // update cache
+           if (can_update()) {
+               cache.put(request->get_full_url(), response_refetched);
+           }
+           if(my_send(client_fd, my_buffer) < 0){
+               cerr << "Error: reply to client" << endl;
+           }
+           cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
+           return;
+       }
+       else {// if not expired
+           // request cache-control
+           auto req_it = req_header->find("Cache-Control");
+           if (req_it != req_header->end()) {
+               // Found Request Cache-Control
+               string request_cache_control = req_it->second;
+               // no-cahce -> revalidate
+               if (request_cache_control.find("no-cache") != string::npos) {
+                   // revalidate
+                   std::cout << "in cache, but need to revalidate" << std::endl;
+                   bool valid = revalidation();
+                   if (valid) {
+                       std::cout << "in cache, revalidation succeed, valid" << std::endl;
+                       // =======================================
+                       send_cached_response();
+                       cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
+                       // TBD ===================================
+                       return;
+                   }
+                   else {
+                       std::cout << "in cache, revalidation failed, refetching" << std::endl;
+                       // refetching
+                       re_fetching();
+                       // update
+                       if (can_update()) {
+                           cache.put(request->get_full_url(), response_refetched);
+                       }
+                       if(my_send(client_fd, my_buffer) < 0){
+                           cerr << "Error: reply to client" << endl;
+                       }
+                       cout << "=========" << proxy_id << ": Successfully Reply ========" << endl;
+                       return;
+                   }
+
+               }
+               // no-store -> refetching
+               if (req_header->find("no-store")!=req_header->end()){
+                   std::cout << "in cache, but request saying no-store, refetching" << std::endl;
+                   // refetching
+                   re_fetching();
+                   // update
+                   if (can_update()) {
+                       cache.put(request->get_full_url(), response_refetched);
+                   }
+                   if(my_send(client_fd, my_buffer) < 0){
+                       cerr << "Error: reply to client" << endl;
+                   }
+                   cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
+                   return;
+               }
+           }
+           // response cache-control
+           std::map<string, string> *cached_resp_header = cached_resp->get_header();
+           auto resp_it = cached_resp_header->find("Cache-Control");
+           if (resp_it != cached_resp_header->end()) {
+               string response_cached_cache_control = resp_it->second;
+               if (response_cached_cache_control.find("no-cache") != string::npos ||
+                   response_cached_cache_control.find("must-revalidate") != string::npos ||
+                   response_cached_cache_control.find("proxy-revalidate") != string::npos ) {
+                   std::cout << "in cache, but need to revalidate" << std::endl;
+                   bool valid = revalidation();
+                   if (valid) {
+                       std::cout << "in cache, revalidation succeed, valid" << std::endl;
+                       // =============================================
+                       send_cached_response();
+                       cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
+                       // ==============================================
+                       return;
+                   }
+                   else {
+                       std::cout << "in cache, revalidation failed, refetching" << std::endl;
+                       // refetching
+                       re_fetching();
+                       // update
+                       if (can_update()) {
+                           cache.put(request->get_full_url(), response_refetched);
+                       }
+                       if(my_send(client_fd, my_buffer) < 0){
+                           cerr << "Error: reply to client" << endl;
+                       }
+                       cout << "=========" << proxy_id << ": Successdully Reply ========" << endl;
+                       return;
+                   }
+               }
+           }
+           std::cout << "in cache, valid" << std::endl;
+           send_cached_response();
+       }
         cout << "Found and reply to client successfully" << endl;
     } else {
         // Not found! Refetching! Get Response from Server
