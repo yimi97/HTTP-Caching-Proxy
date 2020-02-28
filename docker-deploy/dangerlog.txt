@@ -1,0 +1,33 @@
+
+======== 568 HW2 Http Caching Proxy Dangerlog ========
+
+Authors: Ying Xu(yx136), Yi Mi(ym154)
+Date: Fri, 02/28/2020
+
+1. Send/Recv incomplete request or response
+
+We got timed out error from server when we were testing POST and GET, and found that we did not actually received the whole response back and caused timed out.
+
+For both requests and responses, we should make sure we receive all the bytes. So we defined my_send() and my_recv() to send/recv data continuesly. These two function helped us check whether the end of a request/response arrived.
+
+2. Recv Failure caused segmentation fault
+
+First, It is a fact that there's a time that client connected to proxy successfully but failed to send its request to the proxy for some random and tricky reason.
+
+Then, in order to have proxy continuesly running and do not exit due to recv/send error, we handled all the recv/send error by log failure message and return. This means if we received nothing from client when getting request, the proxy will still go to check request's method and excecute corresponding methods, which means we are trying to access a request which has never being created. This caused "Invalid read of size 8". We fixed this risk by double check whether the pointer to a request is null before we call get_method() in proxy_run(). For pointers to responses, we did the same thing.
+
+3. The choice of key in cache
+
+We have a field called full_url in request, which was used as key when we want to put a request and its corresponding response into cache. We wanted to use the whole request string as the key, but apparently it wasted a lot space in this way. So we finally used the full_url, which is consisted of a url(include hostname or not) and its port number. We make sure that the uri is unique for each request requesting the same resources, so this could be unique, and take less space. For response, we stored a pointer to the response as value to save space.
+
+4. Headers not in standard format.
+
+   4.1 Time parse
+
+   We test our time parse function with mocky and found our code has a strict restriction for the format of coming headers. If there's an extra space before the GMT time, the time will be parsed to a wrong string.
+
+   4.2 ETag
+   
+   We tested our code with some webpage and found we cannot get ETag from a request/response having ETag header. This issue was caused by format either. Some web sent out req/resp with ETag writing in "Etag", this means if we find "ETag", the standard ETag format, in headers, we got nothing.
+
+   Now we find "ETag" in our code, as we want to follow the standard format, but this will caused missing of some instandard Etag.
