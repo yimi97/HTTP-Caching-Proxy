@@ -94,7 +94,7 @@ public:
 //        getpeername(int client_fd, struct sockaddr *addr, int *addrlen);
 //    }
     std::string parse_request_line(){
-        return request.substr(0, request.find("\r\n"));
+        return request.substr(0, request.find("\r\n")+2);
     }
     std::string parse_method(){
         return request_line.substr(0, request_line.find(" "));

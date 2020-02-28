@@ -112,3 +112,55 @@ void send_cached_response(){
     my_send(fd, mybuffer);
 }
 
+
+/* add send_400 to the behind of all recv(server_fd) if code == 400*/
+void send_400(){
+    string header_502 = "HTTP/1.1 400 Bad Request\r\n\r\n";
+    int status = send(client_fd, header_502.c_str(), header.size(), 0);
+    if(status<=0){   
+    }
+}
+string s(first_buf);
+string code = s.substr(s.find(" ") + 1, 3);
+if (code == "400") {
+    send_400();
+    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+    log_flow << proxy_id << ": NOTE Received 304 \"NOT modified\" from Server" << endl;
+    log_flow.close();
+    return true;
+}
+
+/*add send_502 to the behind of all recv(server_fd) if status<0 send 502*/
+void send_502(){
+    string header_502 = "HTTP/1.1 502 Bad Gateway\r\n\r\n";
+    int status = send(client_fd, header_502.c_str(), header.size(), 0);
+    if(status<=0){
+    }
+}
+if(len<0){
+    send_502();
+}
+
+
+/*
+  If have bad request, return 400 to client
+*/
+void return400(int client_fd) {
+  std::cout << "Bad request" << std::endl;
+  std::string header("HTTP/1.1 400 Bad Request\r\nContent-Length: "
+                     "38\r\nConnection: close\r\nContent-Type: "
+                     "text/html\r\n\r\n<html><body>Bad Request</body></html>\n");
+  int len = send(client_fd, header.c_str(), header.length(), MSG_NOSIGNAL);
+}
+
+
+/*
+  If have bad response, return 502 to client
+*/
+void return502(int client_fd) {
+  std::cout << "Bad request" << std::endl;
+  std::string header("HTTP/1.1 502 Bad Gateway\r\nContent-Length: "
+                     "38\r\nConnection: close\r\nContent-Type: "
+                     "text/html\r\n\r\n<html><body>Bad Gateway</body></html>\n");
+  int len = send(client_fd, header.c_str(), header.length(), MSG_NOSIGNAL);
+}

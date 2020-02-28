@@ -1,5 +1,5 @@
 //
-// Created by 徐颖 on 2/17/20.
+// Created by Ying Xu & Yi Mi
 //
 
 #ifndef PROXY_PROXY_H
@@ -58,6 +58,8 @@ private:
     size_t continue_recv(int fd);
     void resp_to_buf(vector<vector<char>> &mybuffer, string response);
     void post_request(); // if request.method == "POST"
+    void send_400();
+    void send_502();
 public:
     Proxy() {}
     Proxy(int client_fd, int id):
@@ -130,13 +132,26 @@ void Proxy::data_forwarding() {
             // recv data from server
             status = recv(server_fd, p, buffer_size, 0);
             if (status < 0) {
-                log("ERROR Receive Data From Server Failure");
+                send_502();
+                log("ERROR 502 Bad Gateway: Receive Data From Server Failure");
                 break;
             } else if (status == 0) {
                 log("Tunnel closed");
                 return;
             } else {
                 // forward data to client
+                
+                /* 
+                 * check if server responds 400 Bad Request 
+                **/
+                string s(buffer.data());
+                string code400 = s.substr(s.find(" ") + 1, 3);
+                if (code400 == "400") {
+                    send_400();
+                    log("ERROR 400 Bad Request");
+                    break;
+                }
+
                 status = send(client_fd, p, status, 0);
                 if (status == -1) {
                     log("ERROR Transfer Data to Client Failure");
@@ -266,6 +281,8 @@ void Proxy::get_request(){
     response_back = cached_resp;
     /*
          * Mi Yi taking care of this part
+         * 
+         * if no expirtion info, revalidation
          *
          * if expired, refetching
          * if not expired, check cache-control
@@ -274,8 +291,8 @@ void Proxy::get_request(){
          * if cache-control -> no cache -> revalidation
          * if cache-control -> no store -> re-fetching
          * response:
-         * if cache-control -> no cache/must-revalidate/proxy-revalidate -> revalidation
-         * if valid and not expire, send back to client.
+         * if cache-control -> no cache/must-revalidate/proxy-revalidate/Authorization -> revalidation
+         * if valid and not expired, send back to client.
          *
          */
     if (cached_resp != nullptr) {
@@ -443,9 +460,21 @@ void Proxy::re_fetching(){
     my_buffer.clear();
     size_t len = my_recv(server_fd, my_buffer);
     if (len <= 0) {
-        log("ERROR Receive Response from Server Failure");
+        send_502();
+        log("ERROR 502 Bad Gateway: Receive Response from Server Failure");
         return;
     }
+    /* 
+        * check if server responds 400 Bad Request 
+    **/
+    string s(my_buffer[0].data());
+    string code400 = s.substr(s.find(" ") + 1, 3);
+    if (code400 == "400") {
+        send_400();
+        log("ERROR 400 Bad Request");
+        return;
+    }
+
     log("NOTE Receive Response from Server Successfully");
     string str = "";
     int i = 0;
@@ -484,7 +513,7 @@ bool Proxy::revalidation(){
     }
     std::map<std::string, std::string> *cached_resp_header = cached_resp->get_header();
     std::string newheader = "";
-    auto it_etag = cached_resp_header->find("Etag");
+    auto it_etag = cached_resp_header->find("ETag");
     if (it_etag != cached_resp_header->end()) {
         string etag_str = it_etag->second;
         log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
@@ -518,7 +547,8 @@ bool Proxy::revalidation(){
     char* p = buffer.data();
     status = recv(server_fd, p, 9999, 0);
     if (status <= 0) {
-        log("ERROR Receive Re-validation Response Failure");
+        send_502();
+        log("ERROR 502 Bad Gateway: Receive Re-validation Response Failure");
         return false;
     }
     std::string s(p);
@@ -616,7 +646,7 @@ time_t Proxy::get_expiration_time(Response* res){
 }
 
 size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
-    vector<char> first_buf(65535);
+    vector<char> first_buf(buffer_size);
     char *p = first_buf.data();
     size_t len = 0;
     if((len = recv(fd, p, 65535, 0)) <= 0){
@@ -625,7 +655,6 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
     }
     mybuffer.push_back(first_buf);
     // mybuffer is the buffer taking the whole response
-
     string first_str(first_buf.begin(), first_buf.end());
     // get header
     string header_str = first_str.substr(0, first_str.find("\r\n\r\n") + 4);
@@ -650,14 +679,12 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
         return len;
     }
     else if(pos_clen != string::npos) {
-
         string content = header_str.substr(header_str.find("Content-Length: "));
         content = content.substr(16, content.find("\r\n"));
         size_t total = (size_t)atoi(content.c_str());
         log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
         log_flow << proxy_id << ": NOTE Content-Length: " << total << endl;
         log_flow.close();
-        // if cur_len < total_content_length + header_size
         while (len < total + header_str.size()){
             size_t once_len = 0;
             if((once_len = continue_recv(fd)) <= 0){
@@ -668,14 +695,15 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
         }
         return len;
     }
+    log("NOTE chunked or Content-Length does not exist");
     return len;
 }
 
 size_t Proxy::continue_recv(int fd) {
-    vector<char> continue_buf(65535);
+    vector<char> continue_buf(buffer_size);
     char *p = continue_buf.data();
     size_t once_len = 0;
-    if((once_len = recv(fd, p, 65535, 0)) <= 0){
+    if((once_len = recv(fd, p, buffer_size, 0)) <= 0){
         return once_len;
     }
     my_buffer.push_back(continue_buf);
@@ -764,4 +792,24 @@ void Proxy::log(const char* str){
     log_flow << proxy_id << ": " << str << endl;
     log_flow.close();
 }
+
+void Proxy::send_400(){
+    string header_400 = "HTTP/1.1 400 Bad Request\r\n\r\n";
+    int status = send(client_fd, header_400.c_str(), header_400.size(), 0);
+    if (status <= 0) {
+        log("ERROR 400 but sending to cliend failed");
+        return;
+    }
+}
+
+void Proxy::send_502(){
+    string header_502 = "HTTP/1.1 502 Bad Gateway\r\n\r\n";
+    int status = send(client_fd, header_502.c_str(), header_502.size(), 0);
+    if (status <= 0) {
+        log("ERROR 502 but sending to cliend failed");
+        return;
+    }
+}
+
+
 #endif //PROXY_PROXY_H
