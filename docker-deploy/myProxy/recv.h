@@ -83,23 +83,32 @@ size_t my_send(int fd) {
  *convert response to vector<vector>
  */
 // mybuffer.clear();
+
 void resp_to_buf(vector<vector<char>> &mybuffer, Response response){
     string resp = response.get_response();
-    string remain = resp;
     size_t temp_size = 0;
     size_t full_size = 65535;
-    size_t remain_size = resp_size;
-    vector<char> temp;
-    size_t resp_size = resp.size();
+    size_t remain_size = response.size();
+    string content;
     while(remain_size > 0) {
         if(remain_size < full_size) {
-            temp = resp(resp.begin()+temp_size, resp.end());
+            content = response.substr(temp_size, remain_size);
+            vector<char> temp(content.begin() , content.end());
+            mybuffer.push_back(temp);
+            break;
         }
-        temp = resp(remain.begin() + temp_size, remain.begin() + temp_size + full_size);  
+        content = response.substr(temp_size, full_size);
+        vector<char> temp(content.begin() , content.end());
         mybuffer.push_back(temp);
         temp_size = temp_size + full_size;
         remain_size = remain_size - full_size;    
     }
 }
 
+void send_cached_response(){
+    string resp_str = response_cached.get_response();
+    mybuffer.clear();
+    resp_to_buf(mybuffer, resp_str);
+    my_send(fd, mybuffer);
+}
 
