@@ -1,0 +1,1403 @@
+0: NOTE chunked or Content-Length does not exist
+0: GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:05 2020
+
+0: not in cache
+1: NOTE chunked or Content-Length does not exist
+1: CONNECT safebrowsing.googleapis.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:05 2020
+
+1: NOTE Connect server successfully
+0: NOTE Connect server successfully
+0: Requesting "GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+" from www.mocky.io
+0: NOTE Send Request to Server Successfully
+0: NOTE Content-Length: 22
+0: NOTE Receive Response from Server Successfully
+0: Received "HTTP/1.1 200 OK" from www.mocky.io
+0: NOTE Cache-Control:  must-revalidate
+0: NOTE Update Cache Successfully
+0: NOTE no max-age and expire
+0: cached, but requires re-validation
+0: Responding "HTTP/1.1 200 OK"
+2: NOTE chunked or Content-Length does not exist
+2: CONNECT firefox.settings.services.mozilla.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:05 2020
+
+2: NOTE Connect server successfully
+3: NOTE chunked or Content-Length does not exist
+3: CONNECT incoming.telemetry.mozilla.org:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:05 2020
+
+3: NOTE Connect server successfully
+4: NOTE chunked or Content-Length does not exist
+4: CONNECT incoming.telemetry.mozilla.org:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:06 2020
+
+4: NOTE Connect server successfully
+5: NOTE chunked or Content-Length does not exist
+5: CONNECT www.youtube.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:10 2020
+
+5: NOTE Connect server successfully
+5: Tunnel closed
+6: NOTE chunked or Content-Length does not exist
+6: CONNECT www.youtube.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:10 2020
+
+6: NOTE Connect server successfully
+7: NOTE chunked or Content-Length does not exist
+7: CONNECT www.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:11 2020
+
+8: NOTE chunked or Content-Length does not exist
+8: CONNECT www.gstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:11 2020
+
+8: NOTE Connect server successfully
+9: NOTE chunked or Content-Length does not exist
+9: CONNECT fonts.googleapis.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:11 2020
+
+9: NOTE Connect server successfully
+7: NOTE Connect server successfully
+10: NOTE chunked or Content-Length does not exist
+10: CONNECT i.ytimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:11 2020
+
+10: NOTE Connect server successfully
+11: NOTE chunked or Content-Length does not exist
+11: CONNECT zhihu-web-analytics.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:12 2020
+
+12: NOTE chunked or Content-Length does not exist
+12: CONNECT accounts.google.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:12 2020
+
+12: NOTE Connect server successfully
+13: NOTE chunked or Content-Length does not exist
+13: CONNECT googleads.g.doubleclick.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:13 2020
+
+13: NOTE Connect server successfully
+14: NOTE chunked or Content-Length does not exist
+14: CONNECT www.google.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:13 2020
+
+14: NOTE Connect server successfully
+11: NOTE Connect server successfully
+15: NOTE chunked or Content-Length does not exist
+15: CONNECT yt3.ggpht.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:13 2020
+
+15: NOTE Connect server successfully
+16: NOTE chunked or Content-Length does not exist
+16: CONNECT yt3.ggpht.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:13 2020
+
+16: NOTE Connect server successfully
+17: NOTE chunked or Content-Length does not exist
+17: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:16 2020
+
+17: NOTE Connect server successfully
+19: NOTE chunked or Content-Length does not exist
+19: CONNECT cdn.datatables.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:17 2020
+
+18: NOTE chunked or Content-Length does not exist
+18: CONNECT maxcdn.bootstrapcdn.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:17 2020
+
+20: NOTE chunked or Content-Length does not exist
+20: CONNECT code.jquery.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:17 2020
+
+22: NOTE chunked or Content-Length does not exist
+22: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:17 2020
+
+21: NOTE chunked or Content-Length does not exist
+23: NOTE chunked or Content-Length does not exist
+21: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:17 2020
+
+23: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:17 2020
+
+25: NOTE chunked or Content-Length does not exist
+25: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:17 2020
+
+24: NOTE chunked or Content-Length does not exist
+24: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:17 2020
+
+18: NOTE Connect server successfully
+19: NOTE Connect server successfully
+20: NOTE Connect server successfully
+22: NOTE Connect server successfully
+23: NOTE Connect server successfully
+25: NOTE Connect server successfully
+24: NOTE Connect server successfully
+21: NOTE Connect server successfully
+26: NOTE chunked or Content-Length does not exist
+26: CONNECT www.googletagmanager.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:18 2020
+
+26: NOTE Connect server successfully
+27: NOTE chunked or Content-Length does not exist
+27: CONNECT googleads.g.doubleclick.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:18 2020
+
+27: NOTE Connect server successfully
+28: NOTE chunked or Content-Length does not exist
+28: CONNECT static.doubleclick.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:18 2020
+
+28: NOTE Connect server successfully
+29: NOTE chunked or Content-Length does not exist
+29: CONNECT www.google-analytics.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:18 2020
+
+29: NOTE Connect server successfully
+30: NOTE chunked or Content-Length does not exist
+30: CONNECT stats.g.doubleclick.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:19 2020
+
+30: NOTE Connect server successfully
+32: NOTE chunked or Content-Length does not exist
+31: NOTE chunked or Content-Length does not exist
+32: CONNECT static.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:21 2020
+
+31: CONNECT hm.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:21 2020
+
+33: NOTE chunked or Content-Length does not exist
+33: CONNECT unpkg.zhimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:21 2020
+
+37: NOTE chunked or Content-Length does not exist
+37: CONNECT zz.bdstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:21 2020
+
+33: NOTE Connect server successfully
+37: NOTE Connect server successfully
+32: NOTE Connect server successfully
+31: NOTE Connect server successfully
+34: NOTE chunked or Content-Length does not exist
+39: NOTE chunked or Content-Length does not exist
+34: CONNECT pic4.zhimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:22 2020
+
+39: CONNECT pic1.zhimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:22 2020
+
+35: NOTE chunked or Content-Length does not exist
+38: NOTE chunked or Content-Length does not exist
+35: CONNECT pic3.zhimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:22 2020
+
+36: NOTE chunked or Content-Length does not exist
+36: CONNECT hm.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:22 2020
+
+38: CONNECT pic2.zhimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:22 2020
+
+36: NOTE Connect server successfully
+38: NOTE Connect server successfully
+39: NOTE Connect server successfully
+35: NOTE Connect server successfully
+34: NOTE Connect server successfully
+23: Tunnel closed
+25: Tunnel closed
+24: Tunnel closed
+21: Tunnel closed
+22: Tunnel closed
+17: Tunnel closed
+40: NOTE chunked or Content-Length does not exist
+40: CONNECT hm.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:23 2020
+
+40: NOTE Connect server successfully
+15: Tunnel closed
+41: NOTE chunked or Content-Length does not exist
+41: CONNECT www.google-analytics.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:24 2020
+
+41: NOTE Connect server successfully
+42: NOTE chunked or Content-Length does not exist
+42: CONNECT stats.g.doubleclick.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:25 2020
+
+42: NOTE Connect server successfully
+44: NOTE chunked or Content-Length does not exist
+44: CONNECT img-getpocket.cdn.mozilla.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:25 2020
+
+44: NOTE Connect server successfully
+20: Tunnel closed
+45: NOTE chunked or Content-Length does not exist
+45: CONNECT sp0.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:12:28 2020
+
+45: NOTE Connect server successfully
+43: ERROR my_recv() First Receive Failure
+43: ERROR Receive Request from Client Failure
+36: Tunnel closed
+31: Tunnel closed
+40: Tunnel closed
+37: Tunnel closed
+38: Tunnel closed
+35: Tunnel closed
+39: Tunnel closed
+34: Tunnel closed
+7: Tunnel closed
+4: Tunnel closed
+46: NOTE chunked or Content-Length does not exist
+46: CONNECT incoming.telemetry.mozilla.org:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:10 2020
+
+47: NOTE chunked or Content-Length does not exist
+47: CONNECT incoming.telemetry.mozilla.org:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:10 2020
+
+46: NOTE Connect server successfully
+48: NOTE chunked or Content-Length does not exist
+48: CONNECT www.reddit.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:10 2020
+
+47: NOTE Connect server successfully
+48: NOTE Connect server successfully
+49: NOTE chunked or Content-Length does not exist
+49: CONNECT snippets.cdn.mozilla.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:12 2020
+
+50: NOTE chunked or Content-Length does not exist
+50: CONNECT snippets.cdn.mozilla.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:12 2020
+
+49: NOTE Connect server successfully
+50: NOTE Connect server successfully
+52: NOTE chunked or Content-Length does not exist
+52: CONNECT www.redditstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+53: NOTE chunked or Content-Length does not exist
+53: CONNECT preview.redd.it:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+51: NOTE chunked or Content-Length does not exist
+51: CONNECT styles.redditmedia.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+54: NOTE chunked or Content-Length does not exist
+54: CONNECT external-preview.redd.it:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+56: NOTE chunked or Content-Length does not exist
+56: CONNECT b.thumbs.redditmedia.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+55: NOTE chunked or Content-Length does not exist
+55: CONNECT preview.redd.it:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+52: NOTE Connect server successfully
+54: NOTE Connect server successfully
+56: NOTE Connect server successfully
+51: NOTE Connect server successfully
+53: NOTE Connect server successfully
+60: NOTE chunked or Content-Length does not exist
+59: NOTE chunked or Content-Length does not exist
+60: CONNECT b.thumbs.redditmedia.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+61: NOTE chunked or Content-Length does not exist
+59: CONNECT a.thumbs.redditmedia.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+61: CONNECT styles.redditmedia.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+62: NOTE chunked or Content-Length does not exist
+62: CONNECT www.redditstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+63: NOTE chunked or Content-Length does not exist
+63: GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+63: NOTE no max-age and expire
+63: in cache, no expire info, requires validation
+60: NOTE Connect server successfully
+61: NOTE Connect server successfully
+55: NOTE Connect server successfully
+62: NOTE Connect server successfully
+59: NOTE Connect server successfully
+65: NOTE chunked or Content-Length does not exist
+64: NOTE chunked or Content-Length does not exist
+65: CONNECT www.redditstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+64: CONNECT www.redditstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+66: NOTE chunked or Content-Length does not exist
+66: CONNECT www.redditstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+67: NOTE chunked or Content-Length does not exist
+67: CONNECT www.redditstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:13 2020
+
+65: NOTE Connect server successfully
+64: NOTE Connect server successfully
+66: NOTE Connect server successfully
+67: NOTE Connect server successfully
+63: NOTE Connect server successfully
+63: NOTE Re-validation Failed, Re-fetching 
+63: NOTE Connect server successfully
+63: Requesting "GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+" from www.mocky.io
+63: NOTE Send Request to Server Successfully
+61: Tunnel closed
+44: Tunnel closed
+55: Tunnel closed
+62: Tunnel closed
+60: Tunnel closed
+63: NOTE Content-Length: 22
+63: NOTE Receive Response from Server Successfully
+63: Received "HTTP/1.1 200 OK" from www.mocky.io
+63: NOTE Cache-Control:  must-revalidate
+63: NOTE Update Cache Successfully
+63: NOTE no max-age and expire
+63: cached, but requires re-validation
+63: NOTE Reply to Client Successfully
+64: Tunnel closed
+65: Tunnel closed
+67: Tunnel closed
+66: Tunnel closed
+68: NOTE chunked or Content-Length does not exist
+68: CONNECT www.redditmedia.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:15 2020
+
+68: NOTE Connect server successfully
+71: NOTE chunked or Content-Length does not exist
+71: CONNECT gql.reddit.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:15 2020
+
+69: NOTE chunked or Content-Length does not exist
+69: CONNECT c.aaxads.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:15 2020
+
+71: NOTE Connect server successfully
+69: NOTE Connect server successfully
+73: NOTE chunked or Content-Length does not exist
+73: CONNECT www.googletagservices.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:15 2020
+
+72: NOTE chunked or Content-Length does not exist
+72: CONNECT c.amazon-adsystem.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:15 2020
+
+73: NOTE Connect server successfully
+72: NOTE Connect server successfully
+75: NOTE chunked or Content-Length does not exist
+75: CONNECT adservice.google.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:16 2020
+
+76: NOTE chunked or Content-Length does not exist
+76: CONNECT c.amazon-adsystem.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:16 2020
+
+75: NOTE Connect server successfully
+76: NOTE Connect server successfully
+78: NOTE chunked or Content-Length does not exist
+78: CONNECT l3.aaxads.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:16 2020
+
+78: NOTE Connect server successfully
+79: NOTE chunked or Content-Length does not exist
+79: CONNECT id.rlcdn.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:17 2020
+
+79: NOTE Connect server successfully
+80: NOTE Content-Length: 83
+80: POST http://ocsp.sectigo.com/ HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:17 2020
+
+80: NOTE Connect server successfully
+80: Requesting "POST http://ocsp.sectigo.com/ HTTP/1.1
+" from ocsp.sectigo.com
+80: NOTE Send Request to Server Successfully
+80: NOTE Content-Length: 471
+80: NOTE Receive Response from Server Successfully
+80: Received "HTTP/1.1 200 OK" from ocsp.sectigo.com
+80: NOTE Reply to Client Successfully
+81: NOTE chunked or Content-Length does not exist
+81: CONNECT i.redd.it:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:17 2020
+
+82: NOTE chunked or Content-Length does not exist
+82: CONNECT alb.reddit.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:17 2020
+
+81: NOTE Connect server successfully
+82: NOTE Connect server successfully
+84: NOTE chunked or Content-Length does not exist
+84: CONNECT v.redd.it:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:17 2020
+
+84: NOTE Connect server successfully
+85: NOTE chunked or Content-Length does not exist
+85: CONNECT alb.reddit.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:18 2020
+
+85: NOTE Connect server successfully
+86: NOTE Content-Length: 83
+86: POST http://ocsp.sca1b.amazontrust.com/ HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:18 2020
+
+86: NOTE Connect server successfully
+86: Requesting "POST http://ocsp.sca1b.amazontrust.com/ HTTP/1.1
+" from ocsp.sca1b.amazontrust.com
+86: NOTE Send Request to Server Successfully
+86: NOTE Content-Length: 471
+86: NOTE Receive Response from Server Successfully
+86: Received "HTTP/1.1 200 OK" from ocsp.sca1b.amazontrust.com
+86: NOTE Reply to Client Successfully
+88: NOTE chunked or Content-Length does not exist
+88: CONNECT sb.scorecardresearch.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:18 2020
+
+89: NOTE chunked or Content-Length does not exist
+89: CONNECT rules.quantcount.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:18 2020
+
+88: NOTE Connect server successfully
+89: NOTE Connect server successfully
+57: ERROR my_recv() First Receive Failure
+58: ERROR my_recv() First Receive Failure
+57: ERROR Receive Request from Client Failure
+58: ERROR Receive Request from Client Failure
+91: NOTE chunked or Content-Length does not exist
+91: CONNECT gateway.reddit.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:19 2020
+
+91: NOTE Connect server successfully
+92: NOTE chunked or Content-Length does not exist
+92: CONNECT pixel.quantserve.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:13:19 2020
+
+92: NOTE Connect server successfully
+70: ERROR my_recv() First Receive Failure
+70: ERROR Receive Request from Client Failure
+77: ERROR my_recv() First Receive Failure
+74: ERROR my_recv() First Receive Failure
+77: ERROR Receive Request from Client Failure
+74: ERROR Receive Request from Client Failure
+83: ERROR my_recv() First Receive Failure
+83: ERROR Receive Request from Client Failure
+87: ERROR my_recv() First Receive Failure
+87: ERROR Receive Request from Client Failure
+90: ERROR my_recv() First Receive Failure
+90: ERROR Receive Request from Client Failure
+45: Tunnel closed
+69: Tunnel closed
+2: Tunnel closed
+47: Tunnel closed
+3: Tunnel closed
+46: Tunnel closed
+82: Tunnel closed
+85: Tunnel closed
+92: Tunnel closed
+1: Tunnel closed
+12: Tunnel closed
+13: Tunnel closed
+8: Tunnel closed
+16: Tunnel closed
+19: Tunnel closed
+18: Tunnel closed
+9: Tunnel closed
+10: Tunnel closed
+49: Tunnel closed
+50: Tunnel closed
+28: Tunnel closed
+30: Tunnel closed
+29: Tunnel closed
+78: Tunnel closed
+32: Tunnel closed
+33: Tunnel closed
+88: Tunnel closed
+14: Tunnel closed
+42: Tunnel closed
+41: Tunnel closed
+11: Tunnel closed
+6: Tunnel closed
+73: Tunnel closed
+72: Tunnel closed
+71: Tunnel closed
+68: Tunnel closed
+26: Tunnel closed
+76: Tunnel closed
+75: Tunnel closed
+79: Tunnel closed
+89: Tunnel closed
+52: Tunnel closed
+91: Tunnel closed
+51: Tunnel closed
+54: Tunnel closed
+59: Tunnel closed
+93: NOTE chunked or Content-Length does not exist
+93: GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:16:13 2020
+
+93: NOTE no max-age and expire
+93: in cache, no expire info, requires validation
+93: NOTE Connect server successfully
+93: NOTE Re-validation Failed, Re-fetching 
+93: NOTE Connect server successfully
+93: Requesting "GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+" from www.mocky.io
+93: NOTE Send Request to Server Successfully
+93: NOTE Content-Length: 22
+93: NOTE Receive Response from Server Successfully
+93: Received "HTTP/1.1 200 OK" from www.mocky.io
+93: NOTE Cache-Control:  must-revalidate
+93: NOTE Update Cache Successfully
+93: NOTE no max-age and expire
+93: cached, but requires re-validation
+93: NOTE Reply to Client Successfully
+94: NOTE chunked or Content-Length does not exist
+94: GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:16:15 2020
+
+94: NOTE no max-age and expire
+94: in cache, no expire info, requires validation
+94: NOTE Connect server successfully
+94: NOTE Re-validation Failed, Re-fetching 
+94: NOTE Connect server successfully
+94: Requesting "GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+" from www.mocky.io
+94: NOTE Send Request to Server Successfully
+94: NOTE Content-Length: 22
+94: NOTE Receive Response from Server Successfully
+94: Received "HTTP/1.1 200 OK" from www.mocky.io
+94: NOTE Cache-Control:  must-revalidate
+94: NOTE Update Cache Successfully
+94: NOTE no max-age and expire
+94: cached, but requires re-validation
+94: NOTE Reply to Client Successfully
+95: NOTE chunked or Content-Length does not exist
+95: GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:16:17 2020
+
+95: NOTE no max-age and expire
+95: in cache, no expire info, requires validation
+95: NOTE Connect server successfully
+95: NOTE Re-validation Failed, Re-fetching 
+95: NOTE Connect server successfully
+95: Requesting "GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+" from www.mocky.io
+95: NOTE Send Request to Server Successfully
+95: NOTE Content-Length: 22
+95: NOTE Receive Response from Server Successfully
+95: Received "HTTP/1.1 200 OK" from www.mocky.io
+95: NOTE Cache-Control:  must-revalidate
+95: NOTE Update Cache Successfully
+95: NOTE no max-age and expire
+95: cached, but requires re-validation
+95: NOTE Reply to Client Successfully
+84: Tunnel closed
+96: NOTE chunked or Content-Length does not exist
+96: CONNECT spocs.getpocket.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:16:20 2020
+
+97: NOTE chunked or Content-Length does not exist
+97: CONNECT getpocket.cdn.mozilla.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:16:20 2020
+
+97: NOTE Connect server successfully
+96: NOTE Connect server successfully
+98: NOTE chunked or Content-Length does not exist
+98: CONNECT incoming.telemetry.mozilla.org:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:16:20 2020
+
+53: Tunnel closed
+81: Tunnel closed
+56: Tunnel closed
+98: NOTE Connect server successfully
+48: Tunnel closed
+97: Tunnel closed
+99: NOTE chunked or Content-Length does not exist
+99: CONNECT shavar.services.mozilla.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:17:03 2020
+
+99: NOTE Connect server successfully
+27: Tunnel closed
+98: Tunnel closed
+99: Tunnel closed
+96: Tunnel closed
+100: NOTE chunked or Content-Length does not exist
+100: GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:19:31 2020
+
+100: NOTE no max-age and expire
+100: in cache, no expire info, requires validation
+101: NOTE chunked or Content-Length does not exist
+101: CONNECT safebrowsing.googleapis.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:19:31 2020
+
+101: NOTE Connect server successfully
+100: NOTE Connect server successfully
+100: NOTE Re-validation Failed, Re-fetching 
+100: NOTE Connect server successfully
+100: Requesting "GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+" from www.mocky.io
+100: NOTE Send Request to Server Successfully
+100: NOTE Content-Length: 22
+100: NOTE Receive Response from Server Successfully
+100: Received "HTTP/1.1 200 OK" from www.mocky.io
+100: NOTE Cache-Control:  must-revalidate
+100: NOTE Update Cache Successfully
+100: NOTE no max-age and expire
+100: cached, but requires re-validation
+100: NOTE Reply to Client Successfully
+102: NOTE chunked or Content-Length does not exist
+102: GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:19:32 2020
+
+102: NOTE no max-age and expire
+102: in cache, no expire info, requires validation
+102: NOTE Connect server successfully
+102: NOTE Re-validation Failed, Re-fetching 
+102: NOTE Connect server successfully
+102: Requesting "GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+" from www.mocky.io
+102: NOTE Send Request to Server Successfully
+102: NOTE Content-Length: 22
+102: NOTE Receive Response from Server Successfully
+102: Received "HTTP/1.1 200 OK" from www.mocky.io
+102: NOTE Cache-Control:  must-revalidate
+102: NOTE Update Cache Successfully
+102: NOTE no max-age and expire
+102: cached, but requires re-validation
+102: NOTE Reply to Client Successfully
+103: NOTE chunked or Content-Length does not exist
+103: GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:23 2020
+
+103: NOTE no max-age and expire
+103: in cache, no expire info, requires validation
+103: NOTE Connect server successfully
+103: NOTE Re-validation Failed, Re-fetching 
+103: NOTE Connect server successfully
+103: Requesting "GET http://www.mocky.io/v2/5e59357a2f0000d098962543 HTTP/1.1
+" from www.mocky.io
+103: NOTE Send Request to Server Successfully
+103: NOTE Content-Length: 22
+103: NOTE Receive Response from Server Successfully
+103: Received "HTTP/1.1 200 OK" from www.mocky.io
+103: NOTE Cache-Control:  must-revalidate
+103: NOTE Update Cache Successfully
+103: NOTE no max-age and expire
+103: cached, but requires re-validation
+103: NOTE Reply to Client Successfully
+104: NOTE chunked or Content-Length does not exist
+104: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:26 2020
+
+104: NOTE Connect server successfully
+105: NOTE chunked or Content-Length does not exist
+105: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:27 2020
+
+105: NOTE Connect server successfully
+106: NOTE chunked or Content-Length does not exist
+106: CONNECT maxcdn.bootstrapcdn.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:27 2020
+
+109: NOTE chunked or Content-Length does not exist
+109: CONNECT code.jquery.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:27 2020
+
+107: NOTE chunked or Content-Length does not exist
+107: CONNECT cdn.datatables.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:27 2020
+
+110: NOTE chunked or Content-Length does not exist
+110: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:27 2020
+
+113: NOTE chunked or Content-Length does not exist
+113: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:27 2020
+
+104: Tunnel closed
+108: NOTE chunked or Content-Length does not exist
+108: CONNECT fonts.googleapis.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:27 2020
+
+106: NOTE Connect server successfully
+108: NOTE Connect server successfully
+107: NOTE Connect server successfully
+109: NOTE Connect server successfully
+113: NOTE Connect server successfully
+110: NOTE Connect server successfully
+114: NOTE chunked or Content-Length does not exist
+114: CONNECT www.googletagmanager.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:28 2020
+
+111: NOTE chunked or Content-Length does not exist
+112: NOTE chunked or Content-Length does not exist
+111: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:28 2020
+
+112: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:28 2020
+
+115: NOTE chunked or Content-Length does not exist
+115: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:28 2020
+
+114: NOTE Connect server successfully
+112: NOTE Connect server successfully
+111: NOTE Connect server successfully
+115: NOTE Connect server successfully
+116: NOTE chunked or Content-Length does not exist
+116: CONNECT www.youtube.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:28 2020
+
+116: NOTE Connect server successfully
+117: NOTE chunked or Content-Length does not exist
+117: CONNECT www.google-analytics.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:28 2020
+
+117: NOTE Connect server successfully
+118: NOTE chunked or Content-Length does not exist
+118: CONNECT googleads.g.doubleclick.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:28 2020
+
+118: NOTE Connect server successfully
+121: NOTE chunked or Content-Length does not exist
+121: CONNECT stats.g.doubleclick.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:20:29 2020
+
+121: NOTE Connect server successfully
+113: Tunnel closed
+110: Tunnel closed
+105: Tunnel closed
+115: Tunnel closed
+111: Tunnel closed
+112: Tunnel closed
+120: ERROR my_recv() First Receive Failure
+122: ERROR my_recv() First Receive Failure
+120: ERROR Receive Request from Client Failure
+122: ERROR Receive Request from Client Failure
+119: ERROR my_recv() First Receive Failure
+119: ERROR Receive Request from Client Failure
+109: Tunnel closed
+101: Tunnel closed
+123: NOTE chunked or Content-Length does not exist
+123: CONNECT www.artsci.utoronto.ca:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:02 2020
+
+123: NOTE Connect server successfully
+124: NOTE chunked or Content-Length does not exist
+124: CONNECT www.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:03 2020
+
+124: NOTE Connect server successfully
+125: NOTE chunked or Content-Length does not exist
+125: CONNECT zhihu-web-analytics.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:04 2020
+
+125: NOTE Connect server successfully
+126: NOTE chunked or Content-Length does not exist
+126: CONNECT static.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:06 2020
+
+127: NOTE chunked or Content-Length does not exist
+127: CONNECT static.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:06 2020
+
+129: NOTE chunked or Content-Length does not exist
+129: CONNECT static.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:06 2020
+
+128: NOTE chunked or Content-Length does not exist
+128: CONNECT static.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:06 2020
+
+128: NOTE Connect server successfully
+126: NOTE Connect server successfully
+127: NOTE Connect server successfully
+129: NOTE Connect server successfully
+123: Tunnel closed
+131: NOTE chunked or Content-Length does not exist
+131: CONNECT pic3.zhimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:08 2020
+
+133: NOTE chunked or Content-Length does not exist
+133: CONNECT pic4.zhimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:08 2020
+
+130: NOTE chunked or Content-Length does not exist
+130: CONNECT pic1.zhimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:08 2020
+
+132: NOTE chunked or Content-Length does not exist
+132: CONNECT pic2.zhimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:08 2020
+
+127: Tunnel closed
+129: Tunnel closed
+133: NOTE Connect server successfully
+131: NOTE Connect server successfully
+132: NOTE Connect server successfully
+130: NOTE Connect server successfully
+135: NOTE chunked or Content-Length does not exist
+135: CONNECT lens.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:08 2020
+
+136: NOTE chunked or Content-Length does not exist
+136: CONNECT unpkg.zhimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:08 2020
+
+135: NOTE Connect server successfully
+136: NOTE Connect server successfully
+134: NOTE chunked or Content-Length does not exist
+134: CONNECT lens.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:09 2020
+
+134: NOTE Connect server successfully
+137: NOTE chunked or Content-Length does not exist
+137: CONNECT vdn3.vzuu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:10 2020
+
+137: NOTE Connect server successfully
+138: NOTE Content-Length: 83
+138: POST http://status.geotrust.com/ HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:11 2020
+
+138: NOTE Connect server successfully
+138: Requesting "POST http://status.geotrust.com/ HTTP/1.1
+" from status.geotrust.com
+138: NOTE Send Request to Server Successfully
+138: NOTE Content-Length: 471
+138: NOTE Receive Response from Server Successfully
+138: Received "HTTP/1.1 200 OK" from status.geotrust.com
+138: NOTE Reply to Client Successfully
+137: Tunnel closed
+106: Tunnel closed
+107: Tunnel closed
+108: Tunnel closed
+114: Tunnel closed
+121: Tunnel closed
+117: Tunnel closed
+140: NOTE chunked or Content-Length does not exist
+140: CONNECT hm.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:25 2020
+
+142: NOTE chunked or Content-Length does not exist
+142: CONNECT sp0.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:25 2020
+
+142: NOTE Connect server successfully
+140: NOTE Connect server successfully
+144: NOTE chunked or Content-Length does not exist
+144: CONNECT sugar.zhihu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:26 2020
+
+144: NOTE Connect server successfully
+143: NOTE chunked or Content-Length does not exist
+143: CONNECT www.google-analytics.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:27 2020
+
+143: NOTE Connect server successfully
+145: NOTE chunked or Content-Length does not exist
+145: CONNECT stats.g.doubleclick.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:29 2020
+
+145: NOTE Connect server successfully
+146: NOTE chunked or Content-Length does not exist
+146: CONNECT www.google.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:29 2020
+
+146: NOTE Connect server successfully
+116: Tunnel closed
+141: ERROR my_recv() First Receive Failure
+141: ERROR Receive Request from Client Failure
+139: ERROR my_recv() First Receive Failure
+139: ERROR Receive Request from Client Failure
+140: Tunnel closed
+147: NOTE chunked or Content-Length does not exist
+147: CONNECT hm.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:40 2020
+
+149: NOTE chunked or Content-Length does not exist
+149: CONNECT hm.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:40 2020
+
+149: NOTE Connect server successfully
+147: NOTE Connect server successfully
+150: NOTE chunked or Content-Length does not exist
+150: CONNECT hm.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:42 2020
+
+150: NOTE Connect server successfully
+152: NOTE chunked or Content-Length does not exist
+152: CONNECT cpro.baidustatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:43 2020
+
+152: NOTE Connect server successfully
+153: NOTE chunked or Content-Length does not exist
+153: CONNECT pos.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:45 2020
+
+154: NOTE chunked or Content-Length does not exist
+154: CONNECT pos.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:45 2020
+
+151: ERROR my_recv() First Receive Failure
+148: ERROR my_recv() First Receive Failure
+151: ERROR Receive Request from Client Failure
+148: ERROR Receive Request from Client Failure
+154: NOTE Connect server successfully
+153: NOTE Connect server successfully
+155: NOTE chunked or Content-Length does not exist
+155: CONNECT wn.pos.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:49 2020
+
+135: Tunnel closed
+156: NOTE chunked or Content-Length does not exist
+156: CONNECT t10.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:49 2020
+
+157: NOTE chunked or Content-Length does not exist
+157: CONNECT t12.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:49 2020
+
+158: NOTE chunked or Content-Length does not exist
+158: CONNECT f10.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:23:49 2020
+
+155: NOTE Connect server successfully
+134: Tunnel closed
+157: NOTE Connect server successfully
+156: NOTE Connect server successfully
+158: NOTE Connect server successfully
+147: Tunnel closed
+149: Tunnel closed
+150: Tunnel closed
+154: Tunnel closed
+153: Tunnel closed
+157: Tunnel closed
+156: Tunnel closed
+158: Tunnel closed
+155: Tunnel closed
+159: NOTE chunked or Content-Length does not exist
+159: CONNECT www.google.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:22 2020
+
+159: NOTE Connect server successfully
+160: NOTE Content-Length: 84
+160: POST http://ocsp.pki.goog/gts1o1 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:22 2020
+
+160: NOTE Connect server successfully
+160: Requesting "POST http://ocsp.pki.goog/gts1o1 HTTP/1.1
+" from ocsp.pki.goog
+160: NOTE Send Request to Server Successfully
+160: NOTE Content-Length: 472
+160: NOTE Receive Response from Server Successfully
+160: Received "HTTP/1.1 200 OK" from ocsp.pki.goog
+160: NOTE Reply to Client Successfully
+161: NOTE chunked or Content-Length does not exist
+161: CONNECT eclick.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:28 2020
+
+162: NOTE chunked or Content-Length does not exist
+162: CONNECT hm.baidu.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:28 2020
+
+162: NOTE Connect server successfully
+161: NOTE Connect server successfully
+161: Tunnel closed
+168: NOTE chunked or Content-Length does not exist
+166: NOTE chunked or Content-Length does not exist
+165: NOTE chunked or Content-Length does not exist
+168: CONNECT encrypted-tbn0.gstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:29 2020
+
+166: CONNECT encrypted-tbn0.gstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:29 2020
+
+165: CONNECT encrypted-tbn0.gstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:29 2020
+
+167: NOTE chunked or Content-Length does not exist
+167: CONNECT encrypted-tbn0.gstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:29 2020
+
+168: NOTE Connect server successfully
+166: NOTE Connect server successfully
+165: NOTE Connect server successfully
+167: NOTE Connect server successfully
+165: Tunnel closed
+166: Tunnel closed
+167: Tunnel closed
+169: NOTE chunked or Content-Length does not exist
+169: CONNECT adservice.google.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:30 2020
+
+169: NOTE Connect server successfully
+171: NOTE chunked or Content-Length does not exist
+171: CONNECT googleads.g.doubleclick.net:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:30 2020
+
+171: NOTE Connect server successfully
+171: Tunnel closed
+172: NOTE chunked or Content-Length does not exist
+172: CONNECT ece.duke.edu:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:30 2020
+
+172: NOTE Connect server successfully
+173: NOTE Content-Length: 83
+173: POST http://ocsp.usertrust.com/ HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:31 2020
+
+173: NOTE Connect server successfully
+173: Requesting "POST http://ocsp.usertrust.com/ HTTP/1.1
+" from ocsp.usertrust.com
+173: NOTE Send Request to Server Successfully
+173: NOTE Content-Length: 471
+173: NOTE Receive Response from Server Successfully
+173: Received "HTTP/1.1 200 OK" from ocsp.usertrust.com
+173: NOTE Reply to Client Successfully
+174: NOTE chunked or Content-Length does not exist
+174: CONNECT ece.duke.edu:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:31 2020
+
+176: NOTE chunked or Content-Length does not exist
+176: CONNECT ece.duke.edu:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:31 2020
+
+177: NOTE chunked or Content-Length does not exist
+177: CONNECT ece.duke.edu:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:31 2020
+
+174: NOTE Connect server successfully
+178: NOTE chunked or Content-Length does not exist
+178: CONNECT alertbar.oit.duke.edu:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:31 2020
+
+175: NOTE chunked or Content-Length does not exist
+175: CONNECT ece.duke.edu:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:31 2020
+
+180: NOTE chunked or Content-Length does not exist
+176: NOTE Connect server successfully
+180: CONNECT ece.duke.edu:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:31 2020
+
+177: NOTE Connect server successfully
+179: NOTE chunked or Content-Length does not exist
+179: CONNECT alertbar.oit.duke.edu:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:31 2020
+
+178: NOTE Connect server successfully
+175: NOTE Connect server successfully
+180: NOTE Connect server successfully
+179: NOTE Connect server successfully
+181: NOTE Content-Length: 84
+181: POST http://ocsp.usertrust.com/ HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:31 2020
+
+181: NOTE Connect server successfully
+181: Requesting "POST http://ocsp.usertrust.com/ HTTP/1.1
+" from ocsp.usertrust.com
+181: NOTE Send Request to Server Successfully
+181: NOTE Content-Length: 472
+181: NOTE Receive Response from Server Successfully
+181: Received "HTTP/1.1 200 OK" from ocsp.usertrust.com
+181: NOTE Reply to Client Successfully
+182: NOTE Content-Length: 84
+182: POST http://ocsp.usertrust.com/ HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:32 2020
+
+182: NOTE Connect server successfully
+182: Requesting "POST http://ocsp.usertrust.com/ HTTP/1.1
+" from ocsp.usertrust.com
+182: NOTE Send Request to Server Successfully
+182: NOTE Content-Length: 472
+182: NOTE Receive Response from Server Successfully
+182: Received "HTTP/1.1 200 OK" from ocsp.usertrust.com
+182: NOTE Reply to Client Successfully
+183: NOTE chunked or Content-Length does not exist
+183: CONNECT cse.google.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:33 2020
+
+183: NOTE Connect server successfully
+184: NOTE chunked or Content-Length does not exist
+184: CONNECT www.google-analytics.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:33 2020
+
+184: NOTE Connect server successfully
+185: NOTE chunked or Content-Length does not exist
+185: CONNECT clients1.google.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:24:33 2020
+
+185: NOTE Connect server successfully
+164: ERROR my_recv() First Receive Failure
+164: ERROR Receive Request from Client Failure
+163: ERROR my_recv() First Receive Failure
+163: ERROR Receive Request from Client Failure
+170: ERROR my_recv() First Receive Failure
+170: ERROR Receive Request from Client Failure
+180: Tunnel closed
+176: Tunnel closed
+174: Tunnel closed
+172: Tunnel closed
+175: Tunnel closed
+177: Tunnel closed
+162: Tunnel closed
+142: Tunnel closed
+186: NOTE chunked or Content-Length does not exist
+186: GET http://www.rabihyounes.com/ HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:00 2020
+
+186: not in cache
+186: NOTE Connect server successfully
+186: Requesting "GET http://www.rabihyounes.com/ HTTP/1.1
+" from www.rabihyounes.com
+186: NOTE Send Request to Server Successfully
+186: NOTE Content-Length: 3639
+186: NOTE Receive Response from Server Successfully
+186: Received "HTTP/1.1 200 OK" from www.rabihyounes.com
+186: NOTE Cache-Control:  max-age=86400
+186: NOTE Update Cache Successfully
+186: cached, expires at Sat Feb 29 23:25:00 2020
+
+186: Responding "HTTP/1.1 200 OK"
+187: NOTE chunked or Content-Length does not exist
+188: NOTE chunked or Content-Length does not exist
+188: GET http://www.rabihyounes.com/css/cssNewest.css HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:05 2020
+
+188: not in cache
+187: CONNECT fonts.googleapis.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:05 2020
+
+189: NOTE chunked or Content-Length does not exist
+189: CONNECT use.fontawesome.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:05 2020
+
+191: NOTE chunked or Content-Length does not exist
+191: GET http://www.rabihyounes.com/scripts/analytics.js HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:05 2020
+
+191: not in cache
+190: NOTE chunked or Content-Length does not exist
+190: GET http://www.rabihyounes.com/scripts/scriptNewest.js HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:05 2020
+
+190: not in cache
+187: NOTE Connect server successfully
+189: NOTE Connect server successfully
+191: NOTE Connect server successfully
+191: Requesting "GET http://www.rabihyounes.com/scripts/analytics.js HTTP/1.1
+" from www.rabihyounes.com
+191: NOTE Send Request to Server Successfully
+190: NOTE Connect server successfully
+190: Requesting "GET http://www.rabihyounes.com/scripts/scriptNewest.js HTTP/1.1
+" from www.rabihyounes.com
+190: NOTE Send Request to Server Successfully
+188: NOTE Connect server successfully
+188: Requesting "GET http://www.rabihyounes.com/css/cssNewest.css HTTP/1.1
+" from www.rabihyounes.com
+188: NOTE Send Request to Server Successfully
+194: NOTE chunked or Content-Length does not exist
+194: CONNECT platform.twitter.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:09 2020
+
+194: NOTE Connect server successfully
+191: NOTE Content-Length: 295
+191: NOTE Receive Response from Server Successfully
+191: Received "HTTP/1.1 200 OK" from www.rabihyounes.com
+191: NOTE Cache-Control:  max-age=604800
+191: NOTE Update Cache Successfully
+191: cached, expires at Fri Mar  6 23:25:05 2020
+
+191: Responding "HTTP/1.1 200 OK"
+188: NOTE Content-Length: 1153
+188: NOTE Receive Response from Server Successfully
+188: Received "HTTP/1.1 200 OK" from www.rabihyounes.com
+188: NOTE Cache-Control:  max-age=31536000
+188: NOTE Update Cache Successfully
+188: cached, expires at Sat Feb 27 23:25:05 2021
+
+188: Responding "HTTP/1.1 200 OK"
+190: NOTE Content-Length: 501
+190: NOTE Receive Response from Server Successfully
+190: Received "HTTP/1.1 200 OK" from www.rabihyounes.com
+190: NOTE Cache-Control:  max-age=604800
+190: NOTE Update Cache Successfully
+190: cached, expires at Fri Mar  6 23:25:05 2020
+
+190: Responding "HTTP/1.1 200 OK"
+192: ERROR my_recv() First Receive Failure
+192: ERROR Receive Request from Client Failure
+193: ERROR my_recv() First Receive Failure
+193: ERROR Receive Request from Client Failure
+195: NOTE chunked or Content-Length does not exist
+195: GET http://www.rabihyounes.com/images/me.jpg HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+195: not in cache
+197: NOTE chunked or Content-Length does not exist
+197: GET http://www.rabihyounes.com/images/Freya.jpg HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+197: not in cache
+198: NOTE chunked or Content-Length does not exist
+198: CONNECT fonts.gstatic.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+198: NOTE Connect server successfully
+195: NOTE Connect server successfully
+195: Requesting "GET http://www.rabihyounes.com/images/me.jpg HTTP/1.1
+" from www.rabihyounes.com
+195: NOTE Send Request to Server Successfully
+197: NOTE Connect server successfully
+197: Requesting "GET http://www.rabihyounes.com/images/Freya.jpg HTTP/1.1
+" from www.rabihyounes.com
+197: NOTE Send Request to Server Successfully
+197: NOTE Content-Length: 20777
+195: NOTE Content-Length: 21471
+199: NOTE chunked or Content-Length does not exist
+199: CONNECT syndication.twitter.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+197: NOTE Receive Response from Server Successfully
+197: Received "HTTP/1.1 200 OK" from www.rabihyounes.com
+197: NOTE Cache-Control:  max-age=31536000
+197: NOTE Update Cache Successfully
+197: cached, expires at Sat Feb 27 23:25:11 2021
+
+195: NOTE Receive Response from Server Successfully
+195: Received "HTTP/1.1 200 OK" from www.rabihyounes.com
+195: NOTE Cache-Control:  max-age=31536000
+195: NOTE Update Cache Successfully
+195: cached, expires at Sat Feb 27 23:25:11 2021
+
+195: Responding "HTTP/1.1 200 OK"
+197: Responding "HTTP/1.1 200 OK"
+199: NOTE Connect server successfully
+200: NOTE chunked or Content-Length does not exist
+200: CONNECT www.google-analytics.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+200: NOTE Connect server successfully
+201: NOTE chunked or Content-Length does not exist
+201: CONNECT syndication.twitter.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+202: NOTE chunked or Content-Length does not exist
+202: CONNECT cdn.syndication.twimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+202: NOTE Connect server successfully
+201: NOTE Connect server successfully
+203: NOTE Content-Length: 83
+203: POST http://ocsp.digicert.com/ HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+203: NOTE Connect server successfully
+203: Requesting "POST http://ocsp.digicert.com/ HTTP/1.1
+" from ocsp.digicert.com
+203: NOTE Send Request to Server Successfully
+204: NOTE chunked or Content-Length does not exist
+204: CONNECT abs.twimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+203: NOTE Content-Length: 471
+203: NOTE Receive Response from Server Successfully
+203: Received "HTTP/1.1 200 OK" from ocsp.digicert.com
+203: NOTE Reply to Client Successfully
+204: NOTE Connect server successfully
+204: Tunnel closed
+206: NOTE chunked or Content-Length does not exist
+206: CONNECT pbs.twimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+205: NOTE chunked or Content-Length does not exist
+205: CONNECT pbs.twimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+207: NOTE chunked or Content-Length does not exist
+207: CONNECT abs.twimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+208: NOTE chunked or Content-Length does not exist
+208: CONNECT pbs.twimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+209: NOTE chunked or Content-Length does not exist
+209: CONNECT pbs.twimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+210: NOTE chunked or Content-Length does not exist
+210: CONNECT pbs.twimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+211: NOTE chunked or Content-Length does not exist
+211: CONNECT pbs.twimg.com:443 HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+206: NOTE Connect server successfully
+205: NOTE Connect server successfully
+207: NOTE Connect server successfully
+208: NOTE Connect server successfully
+209: NOTE Connect server successfully
+210: NOTE Connect server successfully
+211: NOTE Connect server successfully
+212: NOTE Content-Length: 83
+212: POST http://ocsp.digicert.com/ HTTP/1.1
+ from 10.197.14.122 @ Fri Feb 28 23:25:11 2020
+
+212: NOTE Connect server successfully
+212: Requesting "POST http://ocsp.digicert.com/ HTTP/1.1
+" from ocsp.digicert.com
+212: NOTE Send Request to Server Successfully
+212: NOTE Content-Length: 471
+212: NOTE Receive Response from Server Successfully
+212: Received "HTTP/1.1 200 OK" from ocsp.digicert.com
+212: NOTE Reply to Client Successfully
+206: Tunnel closed
+208: Tunnel closed
+201: Tunnel closed
+209: Tunnel closed
+210: Tunnel closed
+211: Tunnel closed
+196: ERROR my_recv() First Receive Failure
+196: ERROR Receive Request from Client Failure
+118: Tunnel closed
+178: Tunnel closed
+179: Tunnel closed
+128: Tunnel closed
+130: Tunnel closed
+133: Tunnel closed
+145: Tunnel closed
+136: Tunnel closed
+144: Tunnel closed
+126: Tunnel closed
+143: Tunnel closed
+124: Tunnel closed
+132: Tunnel closed
+131: Tunnel closed
+125: Tunnel closed
+152: Tunnel closed

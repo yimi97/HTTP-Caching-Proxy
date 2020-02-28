@@ -12,8 +12,8 @@
 #include "response.h"
 #include "request.h"
 #include <string>
-
-
+#include <mutex>
+mutex cache_lock;
 using namespace std;
 
 /**
@@ -28,17 +28,12 @@ class LRUCache {
 public:
     explicit LRUCache(int capacity): cap(capacity){
     }
-    bool contains_key(string key) {
-        auto found_it = my_map.find(key);
-        if (found_it != my_map.end()) {
-            return true;
-        }
-        return false;
-    }
     // Get the value (will always be positive) of the key if the key exists in the cache,
     // otherwise return -1.
     Response* get(string key) {
+        cache_lock.lock();
         auto found_it = my_map.find(key);
+        cache_lock.unlock();
         if (found_it != my_map.end()) {
             // key exists, get value
             auto it = found_it->second;
@@ -52,12 +47,14 @@ public:
     // When the cache reached its capacity,
     // it should invalidate the least recently used item before inserting a new item
     void put(string key, Response* value) {
+        cache_lock.lock();
         auto found_it = my_map.find(key);
         if (found_it != my_map.end()) {
             // exist
             auto it = found_it->second;
             my_list.splice(my_list.begin(), my_list, it);
             it->second = value;
+
         } else {
             // does not exist
             my_list.emplace_front(key, value);
@@ -68,6 +65,7 @@ public:
                 my_map.erase(to_be_delete);
             }
         }
+        cache_lock.unlock();
     }
 };
 
