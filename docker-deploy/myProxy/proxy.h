@@ -808,10 +808,10 @@ time_t Proxy::get_expiration_time(Response* res){
 }
 
 size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
-    vector<char> first_buf(65535);
+    vector<char> first_buf(buffer_size);
     char *p = first_buf.data();
     size_t len = 0;
-    if((len = recv(fd, p, 65535, 0)) <= 0){
+    if((len = recv(fd, p, buffer_size, 0)) <= 0){
         log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
         log_flow << proxy_id << ": ERROR my_recv() First Receive Failure" << endl;
         log_flow.close();
@@ -874,10 +874,10 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
 }
 
 size_t Proxy::continue_recv(int fd) {
-    vector<char> continue_buf(65535);
+    vector<char> continue_buf(buffer_size);
     char *p = continue_buf.data();
     size_t once_len = 0;
-    if((once_len = recv(fd, p, 65535, 0)) <= 0){
+    if((once_len = recv(fd, p, buffer_size, 0)) <= 0){
         return once_len;
     }
     my_buffer.push_back(continue_buf);

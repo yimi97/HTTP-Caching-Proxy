@@ -113,30 +113,32 @@ void send_cached_response(){
 }
 
 
-
-/*
-    If address cannot find, return 404 to client
-*/
-void return404(int client_fd) {
-  std::cout << "Cannot found" << std::endl;
-  std::string header("HTTP/1.1 404 Not Found\r\nContent-Length: "
-                     "36\r\nConnection: close\r\nContent-Type: "
-                     "text/html\r\n\r\n<html><body>Not Found</body></html>\n");
-  int len = send(client_fd, header.c_str(), header.length(), MSG_NOSIGNAL);
-}
-
-void return_404(){
+/* add send_400 to the behind of all recv(server_fd) if code == 400*/
+void send_400(){
     string header_502 = "HTTP/1.1 400 Bad Request\r\n\r\n";
     int status = send(client_fd, header_502.c_str(), header.size(), 0);
     if(status<=0){   
     }
 }
+string s(first_buf);
+string code = s.substr(s.find(" ") + 1, 3);
+if (code == "400") {
+    send_400();
+    log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+    log_flow << proxy_id << ": NOTE Received 304 \"NOT modified\" from Server" << endl;
+    log_flow.close();
+    return true;
+}
 
-void return_502(){
+/*add send_502 to the behind of all recv(server_fd) if status<0 send 502*/
+void send_502(){
     string header_502 = "HTTP/1.1 502 Bad Gateway\r\n\r\n";
     int status = send(client_fd, header_502.c_str(), header.size(), 0);
     if(status<=0){
     }
+}
+if(len<0){
+    send_502();
 }
 
 
