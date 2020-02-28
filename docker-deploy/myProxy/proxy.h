@@ -625,6 +625,12 @@ void Proxy::post_request() {
 
 bool Proxy::revalidation(){
     // construct revalidation request
+    if (!connect_with_server()) {
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": ERROR revalidation() Connect to Server Failure" << endl;
+        log_flow.close();
+        return false;
+    }
     int status;
     Response *cached_resp = cache.get(request->get_full_url());
     if (cached_resp == nullptr) {
@@ -667,9 +673,9 @@ bool Proxy::revalidation(){
         log_flow.close();
         return false;
     }
-    std::vector<char> buffer(999);
+    std::vector<char> buffer(9999);
     char* p = buffer.data();
-    status = recv(server_fd, p, 999, 0);
+    status = recv(server_fd, p, 9999, 0);
     if (status <= 0) {
         log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
         log_flow << proxy_id << ": ERROR Receive Re-validation Response Failure" << endl;
@@ -681,12 +687,12 @@ bool Proxy::revalidation(){
     string code = s.substr(s.find(" ") + 1, 3);
     if (code == "304") {
         log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
-        log_flow << proxy_id << ": NOTE Received 304 from Server" << endl;
+        log_flow << proxy_id << ": NOTE Received 304 \"NOT modified\" from Server" << endl;
         log_flow.close();
         return true;
     }
     log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
-    log_flow << proxy_id << ": NOTE Received NOT 304 from Server" << endl;
+    log_flow << proxy_id << ": NOTE Received NOT 304 \"Modified\" from Server" << endl;
     log_flow.close();
     return false;
 }

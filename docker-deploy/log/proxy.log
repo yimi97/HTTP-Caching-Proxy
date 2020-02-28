@@ -1,4 +1,4 @@
-0: GET http://www.mocky.io/v2/5e58941d2f0000a206961fe7 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:39:12 2020
+0: GET http://www.mocky.io/v2/5e58941d2f0000a206961fe7 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 21:05:33 2020
 
 0: not in cache
 0: Requesting "GET http://www.mocky.io/v2/5e58941d2f0000a206961fe7 HTTP/1.1" from www.mocky.io
@@ -11,56 +11,50 @@
 0: cached, expires at Mon Dec 18 03:22:44 2023
 
 0: Responding "HTTP/1.1 200 OK"
-1: CONNECT www.youtube.com:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:39:14 2020
+1: GET http://www.mocky.io/v2/5e5895072f0000be0c961fe8 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 21:05:36 2020
 
-2: GET http://www.mocky.io/v2/5e5895072f0000be0c961fe8 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:39:14 2020
+1: not in cache
+1: Requesting "GET http://www.mocky.io/v2/5e5895072f0000be0c961fe8 HTTP/1.1" from www.mocky.io
+1: NOTE Send Request to Server Successfully
+1: NOTE Content-Length: 16
+1: NOTE Receive Response from Server Successfully
+1: Received "HTTP/1.1 200 OK" from www.mocky.io
+1: NOTE Cache-Control:  must-revalidate
+1: NOTE, Update Cache Successfully
+1: cached, expires at Mon Dec 18 03:22:44 2023
 
-2: not in cache
+1: Responding "HTTP/1.1 200 OK"
+2: GET http://www.mocky.io/v2/5e5895072f0000be0c961fe8 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 21:05:40 2020
+
+2: NOTE Cache-Control:  must-revalidate
+2: in cache, requires re-validation
+2: NOTE ETag:  nvjknvjskrbgr
+2: NOTE Received NOT 304 from Server
+2: NOTE Re-validation Failed, Re-fetching
 2: Requesting "GET http://www.mocky.io/v2/5e5895072f0000be0c961fe8 HTTP/1.1" from www.mocky.io
 2: NOTE Send Request to Server Successfully
 2: NOTE Content-Length: 16
 2: NOTE Receive Response from Server Successfully
 2: Received "HTTP/1.1 200 OK" from www.mocky.io
 2: NOTE Cache-Control:  must-revalidate
-2: NOTE, Update Cache Successfully
 2: cached, expires at Mon Dec 18 03:22:44 2023
 
-2: Responding "HTTP/1.1 200 OK"
-3: CONNECT incoming.telemetry.mozilla.org:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:39:26 2020
+2: NOTE Reply to Client Successfully
+3: GET http://www.mocky.io/v2/5e58941d2f0000a206961fe7 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 21:05:44 2020
 
-4: CONNECT incoming.telemetry.mozilla.org:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:39:26 2020
+3: NOTE Cache-Control:  must-revalidate
+3: in cache, requires re-validation
+3: NOTE ETag:  nvjknvjskrbgr
+3: NOTE Received NOT 304 from Server
+3: NOTE Re-validation Failed, Re-fetching
+3: Requesting "GET http://www.mocky.io/v2/5e58941d2f0000a206961fe7 HTTP/1.1" from www.mocky.io
+3: NOTE Send Request to Server Successfully
+3: NOTE Content-Length: 15
+3: NOTE Receive Response from Server Successfully
+3: Received "HTTP/1.1 200 OK" from www.mocky.io
+3: NOTE Cache-Control:  must-revalidate
+3: cached, expires at Mon Dec 18 03:22:44 2023
 
-7: CONNECT incoming.telemetry.mozilla.org:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:39:26 2020
+3: NOTE Reply to Client Successfully
+4: CONNECT www.youtube.com:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 21:05:49 2020
 
-8: CONNECT incoming.telemetry.mozilla.org:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:39:26 2020
-
-6: CONNECT incoming.telemetry.mozilla.org:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:39:26 2020
-
-5: CONNECT incoming.telemetry.mozilla.org:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:39:26 2020
-
-9: CONNECT spocs.getpocket.com:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:41:19 2020
-
-10: CONNECT getpocket.cdn.mozilla.net:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:41:19 2020
-
-11: GET http://www.mocky.io/v2/5e5895072f0000be0c961fe8 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:41:42 2020
-
-11: NOTE Cache-Control:  must-revalidate
-11: in cache, requires re-validation
-11: NOTE ETag:  nvjknvjskrbgr
-11: ERROR Send Re-validation Request Failure
-11: NOTE Re-validation Failed, Re-fetching
-11: Requesting "GET http://www.mocky.io/v2/5e5895072f0000be0c961fe8 HTTP/1.1" from www.mocky.io
-11: NOTE Send Request to Server Successfully
-11: NOTE Content-Length: 16
-11: NOTE Receive Response from Server Successfully
-11: Received "HTTP/1.1 200 OK" from www.mocky.io
-11: NOTE Cache-Control:  must-revalidate
-11: cached, expires at Mon Dec 18 03:22:44 2023
-
-11: NOTE Reply to Client Successfully
-10: Tunnel closed
-12: CONNECT firefox.settings.services.mozilla.com:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:44:07 2020
-
-13: CONNECT content-signature-2.cdn.mozilla.net:443 HTTP/1.1 from 10.197.18.255 @ Fri Feb 28 20:44:07 2020
-
-9: Tunnel closed
