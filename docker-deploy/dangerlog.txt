@@ -1,4 +1,3 @@
-
 ======== 568 HW2 Http Caching Proxy Dangerlog ========
 
 Authors: Ying Xu(yx136), Yi Mi(ym154)
@@ -31,3 +30,7 @@ We have a field called full_url in request, which was used as key when we want t
    We tested our code with some webpage and found we cannot get ETag from a request/response having ETag header. This issue was caused by format either. Some web sent out req/resp with ETag writing in "Etag", this means if we find "ETag", the standard ETag format, in headers, we got nothing.
 
    Now we find "ETag" in our code, as we want to follow the standard format, but this will caused missing of some instandard Etag.
+   
+5. Chunked response Failure
+
+We cannot send full response to client, especially for page with large data ammount. That's because we store data to a vector with a size of 65535, but for bytes not filled by data, they should be resized and shrinked to make the capacity of the vector fit to the vector size. In this way, we can send full chunked or un-chunked responses.
