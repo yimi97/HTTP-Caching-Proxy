@@ -12,7 +12,7 @@ CONNECT: https://www.google.com/
 GET: http://people.duke.edu/~bmr23/ece568/class.html
 POST: http://httpbin.org/forms/post
 chunked: http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx
-pdf: http://www.rabihyounes.com/Rabih%20Younes%20-%20CV.pdf
+pdf: http://people.duke.edu/~bmr23/ece568/syllabus.pdf
 cache: http://people.duke.edu/~bmr23/style.css
 check revalidation and expires: http://www.artsci.utoronto.ca/futurestudents
 
