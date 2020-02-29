@@ -1,0 +1,31 @@
+0: GET http://httpbin.org/forms/post HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:25:33 2020
+
+0: NOTE Connect server successfully
+0: not in cache
+0: Requesting "GET http://httpbin.org/forms/post HTTP/1.1" from httpbin.org
+0: NOTE Send Request to Server Successfully
+0: NOTE Content-Length: 1397
+0: NOTE Receive Response from Server Successfully
+0: Received "HTTP/1.1 200 OK" from httpbin.org
+0: NOTE Update Cache Successfully
+0: NOTE no cache control and expire
+0: cached, but requires re-validation
+0: Responding "HTTP/1.1 200 OK"
+1: CONNECT cdn.syndication.twimg.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:25:49 2020
+
+1: NOTE Connect server successfully
+2: NOTE Content-Length: 102
+2: POST http://httpbin.org/post HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:25:50 2020
+
+2: Requesting "POST http://httpbin.org/post HTTP/1.1" from httpbin.org
+2: WARNING send() <= 0
+2: ERROR Send Request to Server Failure
+2: NOTE Reply to Client Successfully
+3: CONNECT spocs.getpocket.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:26:19 2020
+
+4: CONNECT getpocket.cdn.mozilla.net:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:26:19 2020
+
+4: NOTE Connect server successfully
+3: NOTE Connect server successfully
+4: Tunnel closed
+3: Tunnel closed

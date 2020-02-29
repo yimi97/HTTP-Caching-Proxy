@@ -88,13 +88,9 @@ public:
     std::string get_host(){ return host; }
     std::map<std::string, std::string>* get_header(){ return &header; }
 
-//    void parse_host_ip(){
-//        struct sockaddr client_addr;
-//
-//        getpeername(int client_fd, struct sockaddr *addr, int *addrlen);
-//    }
+
     std::string parse_request_line(){
-        return request.substr(0, request.find("\r\n")+2);
+        return request.substr(0, request.find("\r\n"));
     }
     std::string parse_method(){
         return request_line.substr(0, request_line.find(" "));
@@ -102,27 +98,22 @@ public:
     std::string parse_request_uri(){
         std::string my_uri = request_line.substr(request_line.find(" ") + 1);
         my_uri = my_uri.substr(0, my_uri.find(" "));
-//        if(my_uri.find(":") != string::npos){
-//            my_uri = my_uri.substr(0,my_uri.find(":"));
-//        }
         return my_uri;
     }
     std::string parse_http_version(){
-        std::string my_version = request_line.substr(request_line.find(" ") + 1, request_line.find("\r\n"));
+        std::string my_version = request_line.substr(request_line.find(" ") + 1);
         my_version = my_version.substr(my_version.find(" ") + 1);
         return my_version;
     }
     std::string parse_host(){
         std::string my_host = request.substr(request.find("Host: ") + 6);
         my_host = my_host.substr(0, my_host.find("\r\n"));
-//        std::cout << "Constructing..." << my_host << std::endl;
         if(my_host.find(":") != string::npos){
             my_host = my_host.substr(0,my_host.find(":"));
         }
         return my_host;
     }
     std::string parse_port(){
-//        std::string my_port = request.substr(request.find("\r\n") + 4);
         std::string my_port = request.substr(request.find("Host: ") + 6);
         my_port = my_port.substr(0, my_port.find("\r\n"));
         if(my_port.find(":") != string::npos){

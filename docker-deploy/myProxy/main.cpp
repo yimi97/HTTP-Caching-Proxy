@@ -70,8 +70,7 @@ int main() {
         t.detach();
         client_uid++;
     }
-    free(&hints);
+    freeaddrinfo(res);
     close(socket_fd);
-
     return 0;
 }

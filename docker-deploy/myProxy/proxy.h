@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <sstream>
 #include <time.h>
+#include <netdb.h>
 #include <typeinfo>
 #include <sstream>
 #include "request.h"
@@ -55,7 +56,7 @@ private:
     void log(const char* str);
     size_t my_recv(int fd, vector<vector<char>> &mybuffer);
     size_t my_send(int fd, vector<vector<char>> &buf);
-    size_t continue_recv(int fd);
+    size_t continue_recv(int fd, vector<vector<char>>& buf);
     void resp_to_buf(vector<vector<char>> &mybuffer, string response);
     void post_request(); // if request.method == "POST"
     void send_400();
@@ -73,6 +74,7 @@ public:
     req_header(nullptr),
     resp_header(nullptr){}
     ~Proxy() {
+        delete request;
     }
 
     void proxy_run() {
@@ -182,17 +184,28 @@ void Proxy::data_forwarding() {
 void Proxy::get_request_from_client() {
     // get request from client
     my_buffer.clear();
+    //======================
+//    vector<char> buffer(buffer_size);
+//    char* p = buffer.data();
+//    int len = recv(client_fd, p, buffer_size, 0);
+            //==================
     int len = my_recv(client_fd, my_buffer);
-    if (len <= 0) {
+    if (len < 0) {
         log("ERROR Receive Request from Client Failure");
         return;
     }
+    if (len == 0) {
+        log("NOTE Tunnel Closed");
+        return;
+    }
     string str = "";
+    //===================
     int i = 0;
     while(i < my_buffer.size()){
         str += my_buffer[i].data();
         i++;
     }
+    //====================
     /*
      * Get client's ip address which will be printed in log
      * Last modified by Ying
@@ -225,8 +238,15 @@ void Proxy::get_request_from_client() {
 
 void Proxy::connect_request() {
     // connect with server
-    if (!connect_with_server()) {
-        log("ERROR Connect to Server Failure");
+    try{
+        if (!connect_with_server()) {
+            log("ERROR Connect to Server Failure");
+            return;
+        }
+    } catch (exception &e) {
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": Connect with the Server Failure: " << e.what() << endl;
+        log_flow.close();
         return;
     }
     // send 200 OK back to client
@@ -235,7 +255,9 @@ void Proxy::connect_request() {
     try{
         data_forwarding();
     } catch (std::exception &e) {
-        log("Data Forwarding Failure.");
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": Data Forwarding Failure: " << e.what() << endl;
+        log_flow.close();
         return;
     }
     return;
@@ -243,35 +265,37 @@ void Proxy::connect_request() {
 
 bool Proxy::connect_with_server() {
     struct addrinfo host_info;
+    struct addrinfo *p = &host_info;
     struct addrinfo *host_info_list;
     int status;
     memset(&host_info, 0, sizeof(host_info));//make sure the struct is empty
     host_info.ai_family   = AF_UNSPEC;
     host_info.ai_socktype = SOCK_STREAM;
-//    const char* hostname = request->get_host().c_str();
+
     status = getaddrinfo(request->get_host().c_str(),
-                         request->get_port().c_str(),
-                         &host_info,
-                         &host_info_list);
+            request->get_port().c_str(),
+            &host_info,
+            &host_info_list);
     if (status != 0) {
         log("ERROR cannot get address info for host");
         return false;
     }
     server_fd = socket(host_info_list->ai_family,
-                              host_info_list->ai_socktype,
-                              host_info_list->ai_protocol);
+            host_info_list->ai_socktype,
+            host_info_list->ai_protocol);
     if (server_fd == -1) {
         log("ERROR cannot create socket");
         return false;
     }
     /* connect */
-//    std::cout << "get_server_addr: " << host_info_list->ai_addr << std::endl;
     status = connect(server_fd, host_info_list->ai_addr, host_info_list->ai_addrlen);
     if (status == -1) {
         log("ERROR cannot connect to socket");
         return false;
     }
     log("NOTE Connect server successfully");
+
+    freeaddrinfo(host_info_list);
     return true;
 }
 
@@ -279,6 +303,17 @@ void Proxy::get_request(){
     string url = request->get_full_url();
     Response *cached_resp = cache.get(url);
     response_back = cached_resp;
+    try{
+        if (!connect_with_server()) {
+            log("ERROR Connect to Server Failure");
+            return;
+        }
+    } catch (exception &e) {
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": Connect with the Server Failure: " << e.what() << endl;
+        log_flow.close();
+        return;
+    }
     /*
          * Mi Yi taking care of this part
          * 
@@ -312,8 +347,13 @@ void Proxy::get_request(){
                 re_fetching();
                 // update
                 update_cache();
-                if(my_send(client_fd, my_buffer) <= 0){
+                int status = my_send(client_fd, my_buffer);
+                if (status < 0) {
                     log("ERROR Reply to Client Failure");
+                    return;
+                }
+                if (status == 0) {
+                    log("NOTE Tunnel Closed");
                     return;
                 }
                 log("NOTE Reply to Client Successfully");
@@ -332,10 +372,16 @@ void Proxy::get_request(){
             re_fetching();
             // update cache
             update_cache();
-            if(my_send(client_fd, my_buffer) <= 0){
+            int status = my_send(client_fd, my_buffer);
+            if( status < 0) {
                 log("ERROR Reply to Client Failure");
                 return;
             }
+            if( status == 0) {
+                log("NOTE Tunnel Closed");
+                return;
+            }
+
             log("NOTE Reply to Client Successfully");
             return;
         }
@@ -364,12 +410,18 @@ void Proxy::get_request(){
                         re_fetching();
                         // update
                         update_cache();
-                        if(my_send(client_fd, my_buffer) <= 0){
+                        int status = my_send(client_fd, my_buffer);
+                        if( status < 0) {
                             log("ERROR Reply to Client Failure");
+                            return;
+                        }
+                        if( status == 0) {
+                            log("NOTE Tunnel Closed");
                             return;
                         }
                         log("NOTE Reply to Client Successfully");
                         return;
+
                     }
 
                 }
@@ -380,8 +432,13 @@ void Proxy::get_request(){
                     re_fetching();
                     // update
                     update_cache();
-                    if(my_send(client_fd, my_buffer) <= 0){
+                    int status = my_send(client_fd, my_buffer);
+                    if( status < 0) {
                         log("ERROR Reply to Client Failure");
+                        return;
+                    }
+                    if( status == 0) {
+                        log("NOTE Tunnel Closed");
                         return;
                     }
                     log("NOTE Reply to Client Successfully");
@@ -414,8 +471,13 @@ void Proxy::get_request(){
                         // update
                         update_cache();
                         // reply to client
-                        if(my_send(client_fd, my_buffer) <= 0){
+                        int status = my_send(client_fd, my_buffer);
+                        if( status < 0) {
                             log("ERROR Reply to Client Failure");
+                            return;
+                        }
+                        if( status == 0) {
+                            log("NOTE Tunnel Closed");
                             return;
                         }
                         log("NOTE Reply to Client Successfully");
@@ -433,8 +495,13 @@ void Proxy::get_request(){
         // Update Cache
         update_cache();
         // Reply to Client
-        if(my_send(client_fd, my_buffer) <= 0){
+        int status = my_send(client_fd, my_buffer);
+        if( status < 0) {
             log("ERROR Reply to Client Failure");
+            return;
+        }
+        if( status == 0) {
+            log("NOTE Tunnel Closed");
             return;
         }
         log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
@@ -444,24 +511,29 @@ void Proxy::get_request(){
 }
 
 void Proxy::re_fetching(){
-    if (!connect_with_server()) {
-        return;
-    }
     log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
     log_flow << proxy_id << ": Requesting \"" << request->get_request_line() << "\" from " << request->get_host() << endl;
     log_flow.close();
+//    int status = my_send(server_fd, my_buffer);
     int status = my_send(server_fd, my_buffer);
-    if (status <= 0) {
-        // request failure
-        log("ERROR Send Request to Server Failure");
+    if( status < 0) {
+        log("ERROR Reply to Server Failure");
+        return;
+    }
+    if( status == 0) {
+        log("NOTE Tunnel Closed");
         return;
     }
     log("NOTE Send Request to Server Successfully");
     my_buffer.clear();
     size_t len = my_recv(server_fd, my_buffer);
-    if (len <= 0) {
+    if (len < 0) {
         send_502();
         log("ERROR 502 Bad Gateway: Receive Response from Server Failure");
+        return;
+    }
+    if (len == 0) {
+        log("NOTE Tunnel Closed");
         return;
     }
     /* 
@@ -491,8 +563,13 @@ void Proxy::re_fetching(){
 
 void Proxy::post_request() {
     re_fetching();
-    if(my_send(client_fd, my_buffer) <= 0){
-        log("ERROR Reply to Client Fauilure");
+    int status = my_send(client_fd, my_buffer);
+    if( status < 0) {
+        log("ERROR Reply to Client Failure");
+        return;
+    }
+    if( status == 0) {
+        log("NOTE Tunnel Closed");
         return;
     }
     log("NOTE Reply to Client Successfully");
@@ -501,17 +578,14 @@ void Proxy::post_request() {
 
 bool Proxy::revalidation(){
     // construct revalidation request
-    if (!connect_with_server()) {
-        log("ERROR revalidation() Connect to Server Failure");
-        return false;
-    }
     int status;
     Response *cached_resp = cache.get(request->get_full_url());
     if (cached_resp == nullptr) {
         log("ERROR Cached-Response Not Found");
         return false;
     }
-    std::map<std::string, std::string> *cached_resp_header = cached_resp->get_header();
+    std::map<std
+    ::string, std::string> *cached_resp_header = cached_resp->get_header();
     std::string newheader = "";
     auto it_etag = cached_resp_header->find("ETag");
     if (it_etag != cached_resp_header->end()) {
@@ -598,6 +672,8 @@ void Proxy::update_cache(){
         } else {
             log("cached, but requires re-validation");
         }
+    } else {
+        delete response_refetched;
     }
 }
 
@@ -653,28 +729,38 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
         log("ERROR my_recv() First Receive Failure");
         return len;
     }
+    first_buf.resize(len);
     mybuffer.push_back(first_buf);
     // mybuffer is the buffer taking the whole response
     string first_str(first_buf.begin(), first_buf.end());
     // get header
-    string header_str = first_str.substr(0, first_str.find("\r\n\r\n") + 4);
+    string header_str = first_str.substr(first_str.find("\r\n") + 2);
+    header_str = header_str.substr(0, first_str.find("\r\n\r\n") + 4);
+    cout << proxy_id << ": " << header_str << endl;
     auto pos_chk = header_str.find("chunked");
     auto pos_clen = header_str.find("Content-Length: ");
     if(pos_chk != string::npos) {
         // chunked
         log("NOTE chunked");
+        cout << "chunked" << endl;
+        int i = 0;
         while(true) {
             size_t once_len;
-            if((once_len = continue_recv(fd)) <= 0) {
+            if((once_len = continue_recv(fd, my_buffer)) < 0) {
                 log("ERROR my_recv() chunked Loop Receive Failure");
                 return len;
+            } else if (once_len == 0) {
+                log("NOTE finished recv");
+                break;
             }
+//            cout << proxy_id << ": once: " << i << endl;
             len += once_len;
             vector<char> last_buf = mybuffer[mybuffer.size()-1];
             if (strstr(last_buf.data(), "0\r\n\r\n") != nullptr) {
                 log("NOTE last chunk arrived");
                 break;
             }
+            i++;
         }
         return len;
     }
@@ -685,41 +771,75 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
         log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
         log_flow << proxy_id << ": NOTE Content-Length: " << total << endl;
         log_flow.close();
+        int i = 0;
         while (len < total + header_str.size()){
             size_t once_len = 0;
-            if((once_len = continue_recv(fd)) <= 0){
-                log("ERROR my_recv() content-length Loop Receive Failure");
+            if((once_len = continue_recv(fd, mybuffer)) < 0){
+                log("ERROR my_recv() no c/ch Loop Receive Failure");
                 return len;
+            } else if (once_len == 0) {
+                log("NOTE finished recv");
+                break;
             }
             len += once_len;
         }
         return len;
+    } else {
+        return len;
     }
-    log("NOTE chunked or Content-Length does not exist");
     return len;
 }
 
-size_t Proxy::continue_recv(int fd) {
+size_t Proxy::continue_recv(int fd, vector<vector<char>>& buf) {
     vector<char> continue_buf(buffer_size);
     char *p = continue_buf.data();
     size_t once_len = 0;
-    if((once_len = recv(fd, p, buffer_size, 0)) <= 0){
-        return once_len;
+
+    try {
+        cout << proxy_id << ": in continue recv: " << once_len << endl;
+        if((once_len = recv(fd, p, buffer_size, 0)) <= 0) {
+            log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+            log_flow << proxy_id << ": WARNING continue recv() <= 0" << endl;
+            log_flow.close();
+            return once_len;
+        }
+        cout << proxy_id << ": check once: " << once_len << endl;
+
+    } catch (exception &e) {
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": ERROR Bad continue_recv: " << e.what() << endl;
+        log_flow.close();
     }
-    my_buffer.push_back(continue_buf);
+
+    continue_buf.resize(once_len);
+    cout << proxy_id << ": actually continue recv: " << once_len << endl;
+    cout << proxy_id << ": good continue recv: " << continue_buf.capacity() << endl;
+    buf.push_back(continue_buf);
     return once_len;
 }
 
 size_t Proxy::my_send(int fd, vector<vector<char>>& buf) {
     size_t len = 0;
     int sent = 0;
-    while(sent != buf.size()) {
-        int once_len = send(fd, buf[sent].data(), buf[sent].size(), 0);
-        if (once_len <=0){
-            return once_len;
+    try{
+//        cout << proxy_id << ": SHOULD send: " << buf.size() << endl;
+        while(sent < buf.size()) {
+//            cout << proxy_id << ": check send once: " << sent << " cur_size: " << buf[sent].capacity() << endl;
+            int once_len = send(fd, buf[sent].data(), buf[sent].capacity(), 0);
+            if (once_len <= 0){
+                log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+                log_flow << proxy_id << ": WARNING send() <= 0" << endl;
+                log_flow.close();
+                return once_len;
+            }
+//            cout << proxy_id << ": good send once: " << sent << endl;
+            len += once_len;
+            sent += 1;
         }
-        len += once_len;
-        sent += 1;
+    } catch (exception &e) {
+        log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
+        log_flow << proxy_id << ": my_send Failure: " << e.what() << endl;
+        log_flow.close();
     }
     return len;
 }
@@ -779,10 +899,15 @@ void Proxy::send_cached_response(){
     my_buffer.clear();
     resp_to_buf(my_buffer, resp_str);
     size_t len = my_send(client_fd, my_buffer);
-    if (len <= 0) {
+    if (len < 0) {
         log("NOTE Send Cached-Response Back Failure");
         return;
     }
+    if( len == 0) {
+        log("NOTE Tunnel Closed");
+        return;
+    }
+
     log("NOTE Send Cached-Response Back Successfully");
     return;
 }

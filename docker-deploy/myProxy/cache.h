@@ -28,6 +28,11 @@ class LRUCache {
 public:
     explicit LRUCache(int capacity): cap(capacity){
     }
+    ~LRUCache(){
+        for (auto it = my_list.begin(); it != my_list.end(); ++it){
+            delete it->second;
+        }
+    }
     // Get the value (will always be positive) of the key if the key exists in the cache,
     // otherwise return -1.
     Response* get(string key) {
