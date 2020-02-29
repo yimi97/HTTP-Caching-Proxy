@@ -3,7 +3,6 @@ We used this file to show testcases.
 1. Normal ones:
 
 https://www.youtube.com/
-http://home.sina.com/
 http://www.sohu.com/
 http://www.rabihyounes.com/
 
