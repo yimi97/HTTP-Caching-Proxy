@@ -80,7 +80,7 @@ public:
     void proxy_run() {
         get_request_from_client();
         if (request == nullptr) {
-            cout << proxy_id << ": Did not receive any request ENC================" << endl;
+            log("Did not receive any request");
             close(client_fd);
             return;
         } else {
@@ -90,15 +90,15 @@ public:
         }
         if (request->get_method() == "GET" ) {
             get_request();
-            std::cout << "================ " << proxy_id << ": GET-END ================" << std::endl;
+            log("GET-END");
         }
         else if (request->get_method() == "CONNECT") {
             connect_request();
-            std::cout << "================ " << proxy_id << ": CONNECT-END================" << std::endl;
+            log("CONNECT-END");
         }
         else if (request->get_method() == "POST") {
             post_request();
-            std::cout << "================ " << proxy_id << ": POST-END================" << std::endl;
+            log("POST-END");
         }
         close(client_fd);
         close(server_fd);
@@ -110,7 +110,7 @@ void Proxy::send_ack() {
     const char *ack = "HTTP/1.1 200 OK\r\n\r\n";
     int status = send(client_fd, ack, strlen(ack), 0);
     if (status == -1) {
-        cerr << proxy_id << ": Error: cannot send 200 okay to client" << endl;
+        log("Error: cannot send 200 okay to client");
         return;
     }
 }
@@ -230,10 +230,10 @@ void Proxy::get_request_from_client() {
 
     request = new Request(str, proxy_id);
     req_header = request->get_header();
-    cout << endl << "================= " << proxy_id << ": " << request->get_method() << " Request Received =================" << endl;
-    cout << proxy_id << ": " << request->get_request_line() << endl;
-    cout << proxy_id << ": " << request->get_port() << endl;
-    cout << proxy_id << ": " << request->get_host() << endl;
+//    cout << endl << "================= " << proxy_id << ": " << request->get_method() << " Request Received =================" << endl;
+//    cout << proxy_id << ": " << request->get_request_line() << endl;
+//    cout << proxy_id << ": " << request->get_port() << endl;
+//    cout << proxy_id << ": " << request->get_host() << endl;
 }
 
 void Proxy::connect_request() {
@@ -363,7 +363,7 @@ void Proxy::get_request(){
         // check if expire
         time_t expired_time = get_expiration_time(cached_resp);
         time_t now = time(0);
-        std::cout << "In cache, expiration time " << asctime(gmtime(&expired_time)) << std::endl;
+//        std::cout << "In cache, expiration time " << asctime(gmtime(&expired_time)) << std::endl;
         if (difftime(now, expired_time)>0) {
             log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
             log_flow << proxy_id << ": in cache, but expired at " << asctime(gmtime(&expired_time)) << endl;
@@ -637,7 +637,7 @@ bool Proxy::revalidation(){
 }
 
 bool Proxy::can_update() {
-    cout << "can_update" << endl;
+//    cout << "can_update" << endl;
     std::map<std::string, std::string> *header = response_refetched->get_header();
     auto cc = header->find("Cache-Control");
     auto exp = header->find("Expires");
@@ -736,13 +736,13 @@ size_t Proxy::my_recv(int fd, vector<vector<char>> &mybuffer){
     // get header
     string header_str = first_str.substr(first_str.find("\r\n") + 2);
     header_str = header_str.substr(0, first_str.find("\r\n\r\n") + 4);
-    cout << proxy_id << ": " << header_str << endl;
+//    cout << proxy_id << ": " << header_str << endl;
     auto pos_chk = header_str.find("chunked");
     auto pos_clen = header_str.find("Content-Length: ");
     if(pos_chk != string::npos) {
         // chunked
         log("NOTE chunked");
-        cout << "chunked" << endl;
+//        cout << "chunked" << endl;
         int i = 0;
         while(true) {
             size_t once_len;
@@ -796,14 +796,14 @@ size_t Proxy::continue_recv(int fd, vector<vector<char>>& buf) {
     size_t once_len = 0;
 
     try {
-        cout << proxy_id << ": in continue recv: " << once_len << endl;
+//        cout << proxy_id << ": in continue recv: " << once_len << endl;
         if((once_len = recv(fd, p, buffer_size, 0)) <= 0) {
             log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
             log_flow << proxy_id << ": WARNING continue recv() <= 0" << endl;
             log_flow.close();
             return once_len;
         }
-        cout << proxy_id << ": check once: " << once_len << endl;
+//        cout << proxy_id << ": check once: " << once_len << endl;
 
     } catch (exception &e) {
         log_flow.open(MYLOG, std::ofstream::out | std::ofstream::app);
@@ -812,8 +812,6 @@ size_t Proxy::continue_recv(int fd, vector<vector<char>>& buf) {
     }
 
     continue_buf.resize(once_len);
-    cout << proxy_id << ": actually continue recv: " << once_len << endl;
-    cout << proxy_id << ": good continue recv: " << continue_buf.capacity() << endl;
     buf.push_back(continue_buf);
     return once_len;
 }

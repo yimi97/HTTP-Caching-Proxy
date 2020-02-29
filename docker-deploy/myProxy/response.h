@@ -69,7 +69,7 @@ public:
             std::string key = header_line.substr(0, header_line.find(":"));
             std::string value = header_line.substr(header_line.find(":") + 1);
             header[key] = value;
-            cout << "key: " << key << " ===== value: " << value << endl;
+//            cout << "key: " << key << " ===== value: " << value << endl;
             content = content.substr(content.find("\r\n") + 2);
         }
     }

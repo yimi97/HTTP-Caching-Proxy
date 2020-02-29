@@ -26,7 +26,7 @@ void proxy_helper(int client_fd, int uid) {
 }
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    std::cout << "Welcome to Ying & Yi's Proxy!" << std::endl;
     const char *hostname = nullptr; // hostname set to NULL
 
     struct sockaddr_storage their_addr; // connector's address information
@@ -53,7 +53,7 @@ int main() {
     int thread_id = 1;
     while(1){
         addr_size = sizeof their_addr;
-        std::cout << "I am listening." << std::endl;
+//        std::cout << "I am listening." << std::endl;
         try {
             client_fd = accept(socket_fd, (struct sockaddr *)&their_addr, &addr_size);
             if (client_fd == -1){

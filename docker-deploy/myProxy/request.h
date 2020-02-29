@@ -60,8 +60,8 @@ public:
         } else {
             this->full_url = request_uri;
         }
-        cout << "uri: " << request_uri << endl;
-        cout << "full url: " << full_url << endl;
+//        cout << "uri: " << request_uri << endl;
+//        cout << "full url: " << full_url << endl;
         size_t pos = request.find("Content-Length: ");
         if (pos != string::npos) {
             string content = request.substr(request.find("Content-Length: ") + 16);

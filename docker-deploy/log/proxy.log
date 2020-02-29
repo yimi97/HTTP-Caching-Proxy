@@ -1,31 +1,235 @@
-0: GET http://httpbin.org/forms/post HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:25:33 2020
+0: GET http://www.rabihyounes.com/Rabih%20Younes%20-%20CV.pdf HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:46:40 2020
 
 0: NOTE Connect server successfully
 0: not in cache
-0: Requesting "GET http://httpbin.org/forms/post HTTP/1.1" from httpbin.org
+0: Requesting "GET http://www.rabihyounes.com/Rabih%20Younes%20-%20CV.pdf HTTP/1.1" from www.rabihyounes.com
 0: NOTE Send Request to Server Successfully
-0: NOTE Content-Length: 1397
 0: NOTE Receive Response from Server Successfully
-0: Received "HTTP/1.1 200 OK" from httpbin.org
+0: Received "HTTP/1.1 304 Not Modified" from www.rabihyounes.com
+0: NOTE Cache-Control:  max-age=2592000
 0: NOTE Update Cache Successfully
-0: NOTE no cache control and expire
-0: cached, but requires re-validation
-0: Responding "HTTP/1.1 200 OK"
-1: CONNECT cdn.syndication.twimg.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:25:49 2020
+0: cached, expires at Mon Mar 30 04:46:40 2020
+
+0: Responding "HTTP/1.1 304 Not Modified"
+0: GET-END
+1: GET http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:46:43 2020
 
 1: NOTE Connect server successfully
-2: NOTE Content-Length: 102
-2: POST http://httpbin.org/post HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:25:50 2020
+1: not in cache
+1: Requesting "GET http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx HTTP/1.1" from www.httpwatch.com
+1: NOTE Send Request to Server Successfully
+1: NOTE chunked
+2: CONNECT cdn.syndication.twimg.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:46:44 2020
 
-2: Requesting "POST http://httpbin.org/post HTTP/1.1" from httpbin.org
-2: WARNING send() <= 0
-2: ERROR Send Request to Server Failure
-2: NOTE Reply to Client Successfully
-3: CONNECT spocs.getpocket.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:26:19 2020
+2: NOTE Connect server successfully
+3: GET http://ui.sina.com/assets/img/home/mall_home.gif HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:46:46 2020
 
-4: CONNECT getpocket.cdn.mozilla.net:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:26:19 2020
+3: NOTE Connect server successfully
+3: not in cache
+3: Requesting "GET http://ui.sina.com/assets/img/home/mall_home.gif HTTP/1.1" from ui.sina.com
+3: NOTE Send Request to Server Successfully
+3: NOTE Receive Response from Server Successfully
+3: Received "HTTP/1.1 304 Not Modified" from ui.sina.com
+3: NOTE Cache-Control:  max-age=300
+3: NOTE Update Cache Successfully
+3: cached, expires at Sat Feb 29 04:50:09 2020
+
+3: Responding "HTTP/1.1 304 Not Modified"
+3: GET-END
+1: NOTE last chunk arrived
+1: NOTE Receive Response from Server Successfully
+1: Received "HTTP/1.1 200 OK" from www.httpwatch.com
+1: NOTE Cache-Control:  no-cache, no-store
+1: not cacheable because no-store
+1: Responding "HTTP/1.1 200 OK"
+1: GET-END
+4: GET http://ui.sina.com/favicon.ico HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:46:48 2020
 
 4: NOTE Connect server successfully
-3: NOTE Connect server successfully
-4: Tunnel closed
-3: Tunnel closed
+4: not in cache
+4: Requesting "GET http://ui.sina.com/favicon.ico HTTP/1.1" from ui.sina.com
+4: NOTE Send Request to Server Successfully
+5: GET http://www.rabihyounes.com/scripts/custom.js HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:46:48 2020
+
+4: NOTE Content-Length: 1058
+4: NOTE Receive Response from Server Successfully
+4: Received "HTTP/1.1 404 Not Found" from ui.sina.com
+4: NOTE Update Cache Successfully
+4: NOTE no cache control and expire
+4: cached, but requires re-validation
+4: Responding "HTTP/1.1 404 Not Found"
+4: GET-END
+5: NOTE Connect server successfully
+5: not in cache
+5: Requesting "GET http://www.rabihyounes.com/scripts/custom.js HTTP/1.1" from www.rabihyounes.com
+5: NOTE Send Request to Server Successfully
+5: NOTE Content-Length: 747
+5: NOTE Receive Response from Server Successfully
+5: Received "HTTP/1.1 500 Internal Server Error" from www.rabihyounes.com
+5: NOTE Update Cache Successfully
+5: NOTE no cache control and expire
+5: cached, but requires re-validation
+5: Responding "HTTP/1.1 500 Internal Server Error"
+5: GET-END
+6: GET http://scratchpads.eu/sites/scratchpads.eu/files/styles/slideshow/public/casestudies/antkey%20case%20site.jpg?itok=IUKO9kGU HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:46:50 2020
+
+6: NOTE Connect server successfully
+6: not in cache
+6: Requesting "GET http://scratchpads.eu/sites/scratchpads.eu/files/styles/slideshow/public/casestudies/antkey%20case%20site.jpg?itok=IUKO9kGU HTTP/1.1" from scratchpads.eu
+6: NOTE Send Request to Server Successfully
+6: NOTE Receive Response from Server Successfully
+6: Received "HTTP/1.1 304 Not Modified" from scratchpads.eu
+6: NOTE Cache-Control:  max-age=1209600
+6: NOTE Update Cache Successfully
+6: cached, expires at Sat Mar 14 04:04:49 2020
+
+6: Responding "HTTP/1.1 304 Not Modified"
+6: GET-END
+7: GET http://www.mocky.io/v2/5e5895072f0000be0c961fe8 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:46:53 2020
+
+7: NOTE Connect server successfully
+7: not in cache
+7: Requesting "GET http://www.mocky.io/v2/5e5895072f0000be0c961fe8 HTTP/1.1" from www.mocky.io
+7: NOTE Send Request to Server Successfully
+7: NOTE Content-Length: 16
+7: NOTE Receive Response from Server Successfully
+7: Received "HTTP/1.1 200 OK" from www.mocky.io
+7: NOTE Cache-Control:  must-revalidate
+7: NOTE Update Cache Successfully
+7: cached, expires at Mon Dec 18 03:22:44 2023
+
+7: Responding "HTTP/1.1 200 OK"
+7: GET-END
+8: GET http://www.mocky.io/favicon.ico HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:46:53 2020
+
+8: NOTE Connect server successfully
+8: not in cache
+8: Requesting "GET http://www.mocky.io/favicon.ico HTTP/1.1" from www.mocky.io
+8: NOTE Send Request to Server Successfully
+8: NOTE Content-Length: 2116
+8: NOTE Receive Response from Server Successfully
+8: Received "HTTP/1.1 404 Not Found" from www.mocky.io
+8: NOTE Update Cache Successfully
+8: NOTE no cache control and expire
+8: cached, but requires re-validation
+8: Responding "HTTP/1.1 404 Not Found"
+8: GET-END
+9: GET http://ui.sina.com/assets/img/home/mall_home.gif HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:46:56 2020
+
+9: NOTE Connect server successfully
+9: NOTE Cache-Control:  max-age=300
+9: in cache, valid
+9: NOTE Send Cached-Response Back Successfully
+9: GET-END
+10: GET http://ui.sina.com/favicon.ico HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:46:56 2020
+
+10: NOTE Connect server successfully
+10: NOTE no cache control and expire
+10: in cache, no expire info, requires validation
+10: NOTE ETag:  "4da631a4-422"
+10: : NOTE Received NOT 304 "Modified" from Server
+10: NOTE Re-validation Failed, Re-fetching 
+10: Requesting "GET http://ui.sina.com/favicon.ico HTTP/1.1" from ui.sina.com
+10: NOTE Send Request to Server Successfully
+10: NOTE Content-Length: 1058
+10: NOTE Receive Response from Server Successfully
+10: Received "HTTP/1.1 404 Not Found" from ui.sina.com
+10: NOTE Update Cache Successfully
+10: NOTE no cache control and expire
+10: cached, but requires re-validation
+10: NOTE Reply to Client Successfully
+10: GET-END
+11: GET http://www.rabihyounes.com/Rabih%20Younes%20-%20CV.pdf HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:09 2020
+
+11: NOTE Connect server successfully
+11: NOTE Cache-Control:  max-age=2592000
+11: in cache, valid
+11: NOTE Send Cached-Response Back Successfully
+11: GET-END
+13: CONNECT eclick.baidu.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:12 2020
+
+14: CONNECT eclick.baidu.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:12 2020
+
+12: CONNECT eclick.baidu.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:12 2020
+
+15: CONNECT eclick.baidu.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:12 2020
+
+16: CONNECT www.sohu.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:12 2020
+
+16: NOTE Connect server successfully
+13: NOTE Connect server successfully
+13: Tunnel closed
+13: CONNECT-END
+15: NOTE Connect server successfully
+15: Tunnel closed
+15: CONNECT-END
+14: NOTE Connect server successfully
+14: Tunnel closed
+14: CONNECT-END
+12: NOTE Connect server successfully
+12: Tunnel closed
+12: CONNECT-END
+17: CONNECT statics.itc.cn:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+17: NOTE Connect server successfully
+19: CONNECT statics.itc.cn:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+21: CONNECT 39d0825d09f05.cdn.sohucs.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+20: CONNECT txt.go.sohu.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+23: CONNECT js.sohu.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+25: CONNECT cpro.baidustatic.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+22: CONNECT statics.itc.cn:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+26: CONNECT images.sohu.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+24: CONNECT statics.itc.cn:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+27: CONNECT statics.itc.cn:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+28: CONNECT images.sohu.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+29: CONNECT images.sohu.com:443 HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+22: NOTE Connect server successfully
+21: NOTE Connect server successfully
+19: NOTE Connect server successfully
+24: NOTE Connect server successfully
+27: NOTE Connect server successfully
+26: NOTE Connect server successfully
+29: NOTE Connect server successfully
+28: NOTE Connect server successfully
+30: NOTE Content-Length: 83
+30: POST http://ocsp.dcocsp.cn/ HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+30: Requesting "POST http://ocsp.dcocsp.cn/ HTTP/1.1" from ocsp.dcocsp.cn
+30: WARNING send() <= 0
+30: ERROR Reply to Server Failure
+30: NOTE Reply to Client Successfully
+30: POST-END
+18: GET http://29e5534ea20a8.cdn.sohucs.com/c_zoom,h_213/c_cut,x_2,y_0,w_421,h_280/os/news/3c0ccb6206134c80ad29a875650c11ce.jpg HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+31: GET http://29e5534ea20a8.cdn.sohucs.com/c_zoom,h_213/c_cut,x_0,y_0,w_525,h_350/os/news/25c06ac7c7a08d40eab67e0a9c3bf731.jpg HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+32: GET http://29e5534ea20a8.cdn.sohucs.com/c_zoom,h_103/c_cut,x_30,y_24,w_389,h_259/os/news/591664cd37e92de5628cc609ed228b9d.jpg HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+35: GET http://29e5534ea20a8.cdn.sohucs.com/c_zoom,h_103/c_cut,x_0,y_0,w_637,h_425/os/news/ce91714abf3145fe4a7342ca91665e0e.jpg HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+37: GET http://29e5534ea20a8.cdn.sohucs.com/c_zoom,h_103/c_cut,x_0,y_0,w_1269,h_846/os/news/758755a2d7c7bea4b2a7d682730fd42b.jpg HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+38: NOTE Content-Length: 83
+38: POST http://ocsp.dcocsp.cn/ HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+38: Requesting "POST http://ocsp.dcocsp.cn/ HTTP/1.1" from ocsp.dcocsp.cn
+38: NOTE Send Request to Server Successfully
+36: GET http://29e5534ea20a8.cdn.sohucs.com/c_zoom,h_103/c_cut,x_0,y_0,w_799,h_533/os/news/491cc694f651b6ca48ff6623e8bac902.jpg HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+39: GET http://29e5534ea20a8.cdn.sohucs.com/c_zoom,h_160/c_cut,x_0,y_33,w_552,h_276/os/news/bd55bf41c3c3940a246d6dba44386a16.jpg HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+40: GET http://29e5534ea20a8.cdn.sohucs.com/c_zoom,h_103/c_cut,x_4,y_12,w_1471,h_980/os/news/9f92ee0f1e133c4ee6561a58f5d1837f.jpg HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
+41: GET http://29e5534ea20a8.cdn.sohucs.com/c_zoom,h_103/c_cut,x_0,y_6,w_1550,h_1033/os/news/c21f51bb6a5037b8fa1af01b74a0c9c1.jpg HTTP/1.1 from 10.197.18.255 @ Sat Feb 29 04:47:13 2020
+
