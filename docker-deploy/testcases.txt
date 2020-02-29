@@ -1,0 +1,19 @@
+We used this file to show testcases.
+
+1. Normal ones:
+
+https://www.youtube.com/
+http://home.sina.com/
+http://www.sohu.com/
+http://www.rabihyounes.com/
+
+2. Special ones
+
+CONNECT: https://www.google.com/ 
+GET: http://people.duke.edu/~bmr23/ece568/class.html
+POST: http://httpbin.org/forms/post
+chunked: http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx
+pdf: http://www.rabihyounes.com/Rabih%20Younes%20-%20CV.pdf
+cache: http://people.duke.edu/~bmr23/style.css
+check revalidation and expires: http://www.artsci.utoronto.ca/futurestudents
+
